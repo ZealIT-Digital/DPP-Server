@@ -51,7 +51,6 @@ app.get("/getProducts/:id", async (req, res) => {
     productId.push(customerData.products[i].productId);
   }
 
-  console.log(productId);
   for (let i = 0; i < productId.length; i++) {
     let result = await getProductsById(productId[i]);
     productArray.push(result);

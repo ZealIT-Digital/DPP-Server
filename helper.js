@@ -50,7 +50,7 @@ async function deleteCustomer(id) {
   const deletedCustomer = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
-    .deleteOne({ customerId: id });
+    .deleteOne({ id: id });
   return deletedCustomer;
 }
 
