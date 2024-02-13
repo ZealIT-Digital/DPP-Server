@@ -9,6 +9,7 @@ import {
   postCustomer,
   postProduct,
   deleteCustomer,
+  updateCustomer,
 } from "./helper.js";
 import { customerRouter } from "./routes/customerData.js";
 
@@ -67,6 +68,13 @@ app.post("/postCustomer", async (req, res) => {
 app.post("/postProduct", async (req, res) => {
   let productData = req.body;
   const postedProductData = await postProduct(productData);
+  res.send(postedProductData);
+});
+
+app.post("/updateCustomer/:id", async (req, res) => {
+  let { id } = req.params;
+  let customerData = req.body;
+  const postedProductData = await updateCustomer(id, customerData);
   res.send(postedProductData);
 });
 

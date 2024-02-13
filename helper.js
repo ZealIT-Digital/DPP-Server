@@ -46,6 +46,14 @@ async function postProduct(productData) {
   return postedProductData;
 }
 
+async function updateCustomer(id, customerData) {
+  const postedProductData = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .replaceOne({ id: id }, customerData);
+  return postedProductData;
+}
+
 async function deleteCustomer(id) {
   const deletedCustomer = await client
     .db("DigitalProductPassport")
@@ -60,5 +68,6 @@ export {
   getProductsById,
   postCustomer,
   postProduct,
+  updateCustomer,
   deleteCustomer,
 };
