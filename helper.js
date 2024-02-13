@@ -1,6 +1,20 @@
 import { client } from "./index.js";
 
-// ----------- Customer List --------------------------------------
+async function createUser(userData) {
+  const postedCustomerData = await client
+    .db("DigitalProductPassport")
+    .collection("UserMasterData")
+    .insertOne(userData);
+  return postedCustomerData;
+}
+
+async function login(email) {
+  const loginUserData = await client
+    .db("DigitalProductPassport")
+    .collection("UserMasterData")
+    .findOne({ email: email });
+  return loginUserData;
+}
 
 async function getAllCustomers() {
   const allCustomerData = await client
@@ -63,6 +77,8 @@ async function deleteCustomer(id) {
 }
 
 export {
+  createUser,
+  login,
   getAllCustomers,
   getCustomerById,
   getProductsById,

@@ -2,7 +2,10 @@ import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
+import bcrypt from "bcrypt";
 import {
+  createUser,
+  login,
   getAllCustomers,
   getCustomerById,
   getProductsById,
@@ -11,7 +14,6 @@ import {
   deleteCustomer,
   updateCustomer,
 } from "./helper.js";
-import { customerRouter } from "./routes/customerData.js";
 
 dotenv.config();
 const app = express();
@@ -30,6 +32,51 @@ export async function createConnection() {
 }
 createConnection();
 const client = await createConnection();
+
+app.post("/postUser", async (req, res) => {
+  let userData = req.body;
+  let hashtest = "hello";
+  let userPassword = userData.password;
+  let saltRounds = 10;
+  const postedUser = bcrypt.hash(
+    userPassword,
+    saltRounds,
+    async function (err, hash) {
+      let hashedData = {
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        password: hash,
+        role: "user",
+      };
+      await createUser(hashedData);
+    }
+  );
+
+  res.send(postedUser);
+});
+
+app.get("/login/:email/:password", async (req, res) => {
+  let emailId = req.params.email;
+  let password = req.params.password;
+
+  const loginData = await login(emailId);
+  if (loginData) {
+    let hashedPassword = loginData.password;
+
+    bcrypt.compare(password, hashedPassword, function (err, result) {
+      let accumulatedData = {
+        firstName: loginData.firstName,
+        lastName: loginData.lastName,
+        email: loginData.email,
+        password: loginData.password,
+        passwordStatus: result,
+        role: loginData.role,
+      };
+      res.send(accumulatedData);
+    });
+  }
+});
 
 app.get("/", async (req, res) => {
   const allCustomers = await getAllCustomers();
