@@ -3,6 +3,8 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
 import bcrypt from "bcrypt";
+import bodyParser from "body-parser";
+import jwt from "jsonwebtoken";
 import {
   createUser,
   login,
@@ -18,7 +20,9 @@ import {
 dotenv.config();
 const app = express();
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 9000;
 
@@ -32,6 +36,19 @@ export async function createConnection() {
 }
 createConnection();
 const client = await createConnection();
+
+// Middleware function to verify JWT
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+    next();
+  } else {
+    res.sendStatus(403);
+  }
+}
 
 app.post("/postUser", async (req, res) => {
   let userData = req.body;
@@ -61,8 +78,13 @@ app.get("/login/:email/:password", async (req, res) => {
   let password = req.params.password;
 
   const loginData = await login(emailId);
+
   if (loginData) {
     let hashedPassword = loginData.password;
+
+    let payload = req.params;
+    let secret = process.env.TOKEN_SECRET;
+    let signature = jwt.sign(payload, secret, { expiresIn: "10h" });
 
     bcrypt.compare(password, hashedPassword, function (err, result) {
       let accumulatedData = {
@@ -72,15 +94,24 @@ app.get("/login/:email/:password", async (req, res) => {
         password: loginData.password,
         passwordStatus: result,
         role: loginData.role,
+        token: signature,
       };
       res.send(accumulatedData);
     });
+  } else {
+    res.send("No User Found");
   }
 });
 
-app.get("/", async (req, res) => {
-  const allCustomers = await getAllCustomers();
-  res.send(allCustomers);
+app.get("/", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allCustomers = await getAllCustomers();
+      res.send(allCustomers);
+    }
+  });
 });
 
 app.get("/getCustomer/:id", async (req, res) => {
