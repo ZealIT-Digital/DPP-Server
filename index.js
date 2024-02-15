@@ -114,27 +114,39 @@ app.get("/", verifyToken, async (req, res) => {
   });
 });
 
-app.get("/getCustomer/:id", async (req, res) => {
-  let { id } = req.params;
-  const result = await getCustomerById(id);
-  res.send(result);
+app.get("/getCustomer/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      const result = await getCustomerById(id);
+      res.send(result);
+    }
+  });
 });
 
-app.get("/getProducts/:id", async (req, res) => {
-  let { id } = req.params;
-  let productId = [];
-  let productArray = [];
-  const customerData = await getCustomerById(id);
+app.get("/getProducts/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      let productId = [];
+      let productArray = [];
+      const customerData = await getCustomerById(id);
 
-  for (let i = 0; i < customerData.products.length; i++) {
-    productId.push(customerData.products[i].productId);
-  }
+      for (let i = 0; i < customerData.products.length; i++) {
+        productId.push(customerData.products[i].productId);
+      }
 
-  for (let i = 0; i < productId.length; i++) {
-    let result = await getProductsById(productId[i]);
-    productArray.push(result);
-  }
-  res.send(productArray);
+      for (let i = 0; i < productId.length; i++) {
+        let result = await getProductsById(productId[i]);
+        productArray.push(result);
+      }
+      res.send(productArray);
+    }
+  });
 });
 
 app.post("/postCustomer", verifyToken, async (req, res) => {
@@ -149,17 +161,32 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
   });
 });
 
-app.post("/postProduct", async (req, res) => {
-  let productData = req.body;
-  const postedProductData = await postProduct(productData);
-  res.send(postedProductData);
+app.post("/postProduct", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(403);
+    } else {
+      let productData = req.body;
+      const postedProductData = await postProduct(productData);
+      res.send(postedProductData);
+    }
+  });
 });
 
-app.post("/updateCustomer/:id", async (req, res) => {
-  let { id } = req.params;
-  let customerData = req.body;
-  const postedProductData = await updateCustomer(id, customerData);
-  res.send(postedProductData);
+app.post("/updateCustomer/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      let customerData = req.body;
+
+      const postedProductData = await updateCustomer(id, customerData);
+      res.send(postedProductData);
+    }
+  });
 });
 
 app.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
