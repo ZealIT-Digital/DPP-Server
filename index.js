@@ -137,10 +137,16 @@ app.get("/getProducts/:id", async (req, res) => {
   res.send(productArray);
 });
 
-app.post("/postCustomer", async (req, res) => {
-  let customerData = req.body;
-  const postedCustomer = await postCustomer(customerData);
-  res.send(postedCustomer);
+app.post("/postCustomer", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let customerData = req.body;
+      const postedCustomer = await postCustomer(customerData);
+      res.send(postedCustomer);
+    }
+  });
 });
 
 app.post("/postProduct", async (req, res) => {
