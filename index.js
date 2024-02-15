@@ -162,10 +162,16 @@ app.post("/updateCustomer/:id", async (req, res) => {
   res.send(postedProductData);
 });
 
-app.delete("/deleteCustomer/:id", async (req, res) => {
-  let { id } = req.params;
-  const deletedCustomer = await deleteCustomer(id);
-  res.send(deletedCustomer);
+app.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      const deletedCustomer = await deleteCustomer(id);
+      res.send(deletedCustomer);
+    }
+  });
 });
 
 app.listen(PORT, () =>
