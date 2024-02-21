@@ -149,6 +149,14 @@ app.get("/getProducts/:id", verifyToken, async (req, res) => {
   });
 });
 
+app.get("/getProduct/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+    let { id } = req.params;
+    let result = await getProductsById(id);
+    res.send(result);
+  });
+});
+
 app.post("/postCustomer", verifyToken, async (req, res) => {
   jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
     if (err) {
