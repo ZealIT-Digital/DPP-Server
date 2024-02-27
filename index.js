@@ -213,7 +213,6 @@ app.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
 app.get("/getUiTemplate/:id", async (req, res) => {
   let { id } = req.params;
   const UiTemplate = await getUiTemplate(id);
-  console.log(UiTemplate);
   res.send(UiTemplate);
 });
 
