@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 9000;
 
-let mongoURL = process.env.MONGO_URL;
+let mongoURL = process.env.CUSTOMCONNSTR_MONGO_URL;
 
 export async function createConnection() {
   const client = new MongoClient(mongoURL);
@@ -84,7 +84,7 @@ app.get("/login/:email/:password", async (req, res) => {
     let hashedPassword = loginData.password;
 
     let payload = req.params;
-    let secret = process.env.TOKEN_SECRET;
+    let secret = process.env.CUSTOMCONNSTR_TOKEN_SECRET;
     let signature = jwt.sign(payload, secret, { expiresIn: "10h" });
 
     bcrypt.compare(password, hashedPassword, function (err, result) {
