@@ -27,7 +27,9 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 9000;
 
-let mongoURL = process.env.MONGO_URL;
+// let mongoURL = process.env.MONGO_URL;
+let mongoURL =
+  "mongodb+srv://zealitdigital:ZealIT-2024@zealit.c3y2eea.mongodb.net/?retryWrites=true&w=majority";
 
 export async function createConnection() {
   const client = new MongoClient(mongoURL);
