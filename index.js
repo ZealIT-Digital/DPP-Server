@@ -76,9 +76,11 @@ app.post("/postUser", async (req, res) => {
   res.send(postedUser);
 });
 
-app.get("/login/:email/:password", async (req, res) => {
-  let emailId = req.params.email;
-  let password = req.params.password;
+app.post("/login", async (req, res) => {
+  let data = req.body;
+
+  let emailId = data.email;
+  let password = data.password;
 
   const loginData = await login(emailId);
 
@@ -100,6 +102,7 @@ app.get("/login/:email/:password", async (req, res) => {
         token: signature,
       };
       res.send(accumulatedData);
+      console.log(accumulatedData);
     });
   } else {
     res.send("No User Found");
