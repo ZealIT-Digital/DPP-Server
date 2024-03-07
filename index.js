@@ -88,7 +88,8 @@ app.post("/login", async (req, res) => {
     let hashedPassword = loginData.password;
 
     let payload = req.params;
-    let secret = process.env.TOKEN_SECRET;
+    // let secret = process.env.TOKEN_SECRET;
+    let secret = "DPP-Shh";
     let signature = jwt.sign(payload, secret, { expiresIn: "10h" });
 
     bcrypt.compare(password, hashedPassword, function (err, result) {
@@ -110,7 +111,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
