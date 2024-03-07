@@ -122,7 +122,7 @@ app.get("/", verifyToken, async (req, res) => {
 });
 
 app.get("/getCustomer/:id", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
@@ -134,7 +134,7 @@ app.get("/getCustomer/:id", verifyToken, async (req, res) => {
 });
 
 app.get("/getProducts/:id", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
@@ -157,7 +157,7 @@ app.get("/getProducts/:id", verifyToken, async (req, res) => {
 });
 
 app.get("/getProduct/:id", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let { id } = req.params;
     let result = await getProductsById(id);
     res.send(result);
@@ -165,7 +165,7 @@ app.get("/getProduct/:id", verifyToken, async (req, res) => {
 });
 
 app.post("/postCustomer", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
@@ -177,7 +177,7 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
 });
 
 app.post("/postProduct", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       console.log(err);
       res.sendStatus(403);
@@ -190,7 +190,7 @@ app.post("/postProduct", verifyToken, async (req, res) => {
 });
 
 app.post("/updateCustomer/:id", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       console.log(err);
       res.sendStatus(403);
@@ -205,7 +205,7 @@ app.post("/updateCustomer/:id", verifyToken, async (req, res) => {
 });
 
 app.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
-  jwt.verify(req.token, process.env.TOKEN_SECRET, async (err, authData) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
