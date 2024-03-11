@@ -16,6 +16,7 @@ import {
   deleteCustomer,
   updateCustomer,
   getUiTemplate,
+  postUiTemplate,
 } from "./helper.js";
 
 dotenv.config();
@@ -219,6 +220,12 @@ app.get("/getUiTemplate/:id", async (req, res) => {
   let { id } = req.params;
   const UiTemplate = await getUiTemplate(id);
   res.send(UiTemplate);
+});
+
+app.post("/postProductDetailsUI", async (eq, res) => {
+  let data = req.body;
+  const postedTemplate = await postUiTemplate(data);
+  res.send(postedTemplate);
 });
 
 app.listen(PORT, () =>

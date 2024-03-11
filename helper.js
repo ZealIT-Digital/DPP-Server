@@ -84,6 +84,14 @@ async function getUiTemplate(id) {
   return UiTemplate;
 }
 
+async function postUiTemplate(data) {
+  const UiTemplate = await client
+    .db("DigitalProductPassport")
+    .collection("UiTemplateMaster")
+    .insertOne(data);
+  return UiTemplate;
+}
+
 export {
   createUser,
   login,
@@ -95,4 +103,5 @@ export {
   updateCustomer,
   deleteCustomer,
   getUiTemplate,
+  postUiTemplate,
 };
