@@ -55,6 +55,12 @@ function verifyToken(req, res, next) {
   }
 }
 
+app.get("/routVerification", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    res.send({ status: 200 });
+  });
+});
+
 app.post("/postUser", async (req, res) => {
   let userData = req.body;
   let hashtest = "hello";
