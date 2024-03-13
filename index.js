@@ -57,7 +57,11 @@ function verifyToken(req, res, next) {
 
 app.get("/routVerification", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-    res.send({ status: 200 });
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      res.sendStatus(200);
+    }
   });
 });
 
