@@ -194,8 +194,21 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
       res.sendStatus(403);
     } else {
       let customerData = req.body;
-      const postedCustomer = await postCustomer(customerData);
-      res.send(postedCustomer);
+      const allCustomers = await getAllCustomers();
+
+      let customerExist = false;
+
+      allCustomers.map(async (customer) => {
+        if (customer.id == customerData.id) {
+          res.send({ message: "Customer Already Exist" });
+        } else {
+          null;
+        }
+      });
+      if (customerExist == false) {
+        const postedCustomer = await postCustomer(customerData);
+        res.send(postedCustomer);
+      }
     }
   });
 });
