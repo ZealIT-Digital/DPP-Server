@@ -25,6 +25,15 @@ async function getAllCustomers() {
   return allCustomerData;
 }
 
+async function getAllProducts() {
+  const allProductData = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .find()
+    .toArray();
+  return allProductData;
+}
+
 async function getCustomerById(id) {
   const customerData = await client
     .db("DigitalProductPassport")
@@ -104,4 +113,5 @@ export {
   deleteCustomer,
   getUiTemplate,
   postUiTemplate,
+  getAllProducts,
 };

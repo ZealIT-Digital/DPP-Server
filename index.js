@@ -17,6 +17,7 @@ import {
   updateCustomer,
   getUiTemplate,
   postUiTemplate,
+  getAllProducts,
 } from "./helper.js";
 
 dotenv.config();
@@ -129,6 +130,17 @@ app.get("/", verifyToken, async (req, res) => {
     } else {
       const allCustomers = await getAllCustomers();
       res.send(allCustomers);
+    }
+  });
+});
+
+app.get("/getAllProducts", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allProducts = await getAllProducts();
+      res.send(allProducts);
     }
   });
 });
