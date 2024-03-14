@@ -198,16 +198,41 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
 
       let customerExist = false;
 
-      allCustomers.map(async (customer) => {
-        if (customer.id == customerData.id) {
-          res.send({ message: "Customer Already Exist" });
+      let dbCustomerAddress =
+        customerData.addressL1 +
+        customerData.addressL2 +
+        customerData.state +
+        customerData.city +
+        customerData.country;
+
+      for (let i = 0; i < allCustomers.length; i++) {
+        let customerAddress =
+          allCustomers[i].addressL1 +
+          allCustomers[i].addressL2 +
+          allCustomers[i].state +
+          allCustomers[i].city +
+          allCustomers[i].country;
+
+        if (
+          allCustomers[i].id == customerData.id ||
+          allCustomers[i].name == customerData.name ||
+          allCustomers[i].logoUrl == customerData.logoUrl ||
+          customerAddress == dbCustomerAddress
+        ) {
+          customerExist = true;
+          console.log(allCustomers[i]);
+          break;
         } else {
           null;
         }
-      });
+      }
+
       if (customerExist == false) {
         const postedCustomer = await postCustomer(customerData);
+        console.log(postCustomer);
         res.send(postedCustomer);
+      } else {
+        res.send({ message: "This Customer Data Already Exist" });
       }
     }
   });
