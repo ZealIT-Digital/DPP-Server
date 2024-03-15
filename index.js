@@ -18,6 +18,10 @@ import {
   getUiTemplate,
   postUiTemplate,
   getAllProducts,
+  prodID,
+  updateProdRunningNo,
+  templateID,
+  updateProduct,
 } from "./helper.js";
 
 dotenv.config();
@@ -180,6 +184,18 @@ app.get("/getProducts/:id", verifyToken, async (req, res) => {
   });
 });
 
+app.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      let UiTemplate = await getUiTemplate(id);
+      res.send(UiTemplate);
+    }
+  });
+});
+
 app.get("/getProduct/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let { id } = req.params;
@@ -284,11 +300,51 @@ app.get("/getUiTemplate/:id", async (req, res) => {
   res.send(UiTemplate);
 });
 
-app.post("/postProductDetailsUI", async (req, res) => {
+app.post("/postProductDetailsUI/:id", async (req, res) => {
+  let { id } = req.params;
   let data = req.body;
-  const postedTemplate = await postUiTemplate(data);
-  console.log(postedTemplate);
-  res.send(postedTemplate);
+
+  let idDetails = await templateID();
+  let prefix = idDetails.prefix;
+  let running = idDetails.runningNumber;
+  let rangeStart = idDetails.rangeStart;
+  let rangeEnd = idDetails.rangeEnd;
+
+  let inc = parseInt(running) + 1;
+  let tempId = prefix + "-" + inc;
+
+  data.templateId = tempId;
+
+  if (inc > rangeStart && inc < rangeEnd) {
+    const postedTemplate = await postUiTemplate(data);
+    // console.log(postedTemplate);
+    const updatedProduct = await updateProduct(id, tempId);
+    console.log(updatedProduct);
+    res.send(updatedProduct);
+  } else {
+    res.send({ message: "ID Range did not match" });
+  }
+});
+
+app.get("/genProdId", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let idDetails = await prodID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+
+    let inc = parseInt(running) + 1;
+    let id = prefix + "-" + inc;
+
+    if (inc > rangeStart && inc < rangeEnd) {
+      updateProdRunningNo(inc);
+      // postProduct();
+      res.send({ message: id });
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
+  });
 });
 
 app.listen(PORT, () =>

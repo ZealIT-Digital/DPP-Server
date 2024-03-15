@@ -69,6 +69,22 @@ async function postProduct(productData) {
   return postedProductData;
 }
 
+async function updateProduct(productId, tempID) {
+  let filter = { id: productId };
+  // const options = { upsert: true };
+  let update = {
+    $set: {
+      templateId: tempID,
+    },
+  };
+  const updatedDetails = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .updateOne(filter, update);
+  console.log({ prId: productId, tmID: tempID });
+  return updatedDetails;
+}
+
 async function updateCustomer(id, customerData) {
   const postedProductData = await client
     .db("DigitalProductPassport")
@@ -86,10 +102,18 @@ async function deleteCustomer(id) {
 }
 
 async function getUiTemplate(id) {
+  const productData = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .findOne({ id: id });
+
+  let templateId = productData.uiUemplateId;
+
   const UiTemplate = await client
     .db("DigitalProductPassport")
     .collection("UiTemplateMaster")
-    .findOne({ template_ID: id });
+    .findOne({ template_ID: templateId });
+
   return UiTemplate;
 }
 
@@ -99,6 +123,36 @@ async function postUiTemplate(data) {
     .collection("UiTemplateMaster")
     .insertOne(data);
   return UiTemplate;
+}
+async function prodID() {
+  const productDetail = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .findOne({ idType: "Product" });
+  return productDetail;
+}
+
+async function templateID() {
+  const productDetail = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .findOne({ idType: "Template" });
+  return productDetail;
+}
+
+async function updateProdRunningNo(num) {
+  let filter = { idType: "Product" };
+  let update = {
+    $set: {
+      runningNumber: num,
+    },
+  };
+  const updatedDetails = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .updateOne(filter, update);
+  console.log(updatedDetails);
+  return updatedDetails;
 }
 
 export {
@@ -114,4 +168,8 @@ export {
   getUiTemplate,
   postUiTemplate,
   getAllProducts,
+  prodID,
+  updateProdRunningNo,
+  templateID,
+  updateProduct,
 };
