@@ -110,17 +110,12 @@ async function deleteProduct(id) {
 }
 
 async function getUiTemplate(id) {
-  const productData = await client
-    .db("DigitalProductPassport")
-    .collection("UiTemplateMaster")
-    .findOne({ templateId: id });
-
-  let templateId = productData.uiUemplateId;
+  console.log(id);
 
   const UiTemplate = await client
     .db("DigitalProductPassport")
     .collection("UiTemplateMaster")
-    .findOne({ template_ID: templateId });
+    .findOne({ templateId: id });
 
   return UiTemplate;
 }
