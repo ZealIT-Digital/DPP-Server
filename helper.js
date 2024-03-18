@@ -124,11 +124,20 @@ async function postUiTemplate(data) {
     .insertOne(data);
   return UiTemplate;
 }
+
 async function prodID() {
   const productDetail = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .findOne({ idType: "Product" });
+  return productDetail;
+}
+
+async function custID() {
+  const productDetail = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .findOne({ idType: "Customer" });
   return productDetail;
 }
 
@@ -142,6 +151,21 @@ async function templateID() {
 
 async function updateProdRunningNo(num) {
   let filter = { idType: "Product" };
+  let update = {
+    $set: {
+      runningNumber: num,
+    },
+  };
+  const updatedDetails = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .updateOne(filter, update);
+  console.log(updatedDetails);
+  return updatedDetails;
+}
+
+async function updateCustRunningNo(num) {
+  let filter = { idType: "Customer" };
   let update = {
     $set: {
       runningNumber: num,
@@ -172,4 +196,6 @@ export {
   updateProdRunningNo,
   templateID,
   updateProduct,
+  custID,
+  updateCustRunningNo,
 };

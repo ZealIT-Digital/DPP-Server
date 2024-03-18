@@ -22,6 +22,8 @@ import {
   updateProdRunningNo,
   templateID,
   updateProduct,
+  custID,
+  updateCustRunningNo,
 } from "./helper.js";
 
 dotenv.config();
@@ -339,6 +341,27 @@ app.get("/genProdId", verifyToken, async (req, res) => {
 
     if (inc > rangeStart && inc < rangeEnd) {
       updateProdRunningNo(inc);
+      // postProduct();
+      res.send({ message: id });
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
+  });
+});
+
+app.get("/genCustId", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let idDetails = await custID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+
+    let inc = parseInt(running) + 1;
+    let id = prefix + "-" + inc;
+
+    if (inc > rangeStart && inc < rangeEnd) {
+      updateCustRunningNo(inc);
       // postProduct();
       res.send({ message: id });
     } else {
