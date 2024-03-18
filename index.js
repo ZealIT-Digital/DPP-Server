@@ -24,6 +24,8 @@ import {
   updateProduct,
   custID,
   updateCustRunningNo,
+  updateTempRunningNo,
+  deleteProduct,
 } from "./helper.js";
 
 dotenv.config();
@@ -192,8 +194,12 @@ app.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
       res.sendStatus(403);
     } else {
       let { id } = req.params;
-      let UiTemplate = await getUiTemplate(id);
-      res.send(UiTemplate);
+      let prodDetails = await getProductsById(id);
+
+      let tempId = prodDetails.templateId;
+
+      let templateDetails = await getUiTemplate(tempId);
+      res.send(templateDetails);
     }
   });
 });
@@ -296,6 +302,18 @@ app.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
   });
 });
 
+app.delete("/deleteProduct/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      const deletedProduct = await deleteProduct(id);
+      res.send(deletedProduct);
+    }
+  });
+});
+
 app.get("/getUiTemplate/:id", async (req, res) => {
   let { id } = req.params;
   const UiTemplate = await getUiTemplate(id);
@@ -316,10 +334,12 @@ app.post("/postProductDetailsUI/:id", async (req, res) => {
   let tempId = prefix + "-" + inc;
 
   data.templateId = tempId;
+  console.log(inc);
 
   if (inc > rangeStart && inc < rangeEnd) {
     const postedTemplate = await postUiTemplate(data);
-    // console.log(postedTemplate);
+    await updateTempRunningNo(inc);
+
     const updatedProduct = await updateProduct(id, tempId);
     console.log(updatedProduct);
     res.send(updatedProduct);
@@ -341,7 +361,7 @@ app.get("/genProdId", verifyToken, async (req, res) => {
 
     if (inc > rangeStart && inc < rangeEnd) {
       updateProdRunningNo(inc);
-      // postProduct();
+
       res.send({ message: id });
     } else {
       res.send({ message: "ID Range did not match" });
