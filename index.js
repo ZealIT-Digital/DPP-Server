@@ -176,7 +176,7 @@ app.get("/getProducts/:id", verifyToken, async (req, res) => {
       const customerData = await getCustomerById(id);
 
       for (let i = 0; i < customerData.products.length; i++) {
-        productId.push(customerData.products[i].productId);
+        productId.push(customerData.products[i].id);
       }
 
       for (let i = 0; i < productId.length; i++) {
