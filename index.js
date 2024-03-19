@@ -253,7 +253,18 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
 
       if (customerExist == false) {
         const postedCustomer = await postCustomer(customerData);
-        console.log(postCustomer);
+        let idDetails = await custID();
+        let prefix = idDetails.prefix;
+        let running = idDetails.runningNumber;
+        let rangeStart = idDetails.rangeStart;
+        let rangeEnd = idDetails.rangeEnd;
+
+        let inc = parseInt(running) + 1;
+        let id = prefix + "-" + inc;
+
+        if (inc > rangeStart && inc < rangeEnd) {
+          updateCustRunningNo(inc);
+        }
         res.send(postedCustomer);
       } else {
         res.send({ message: "This Customer Data Already Exist" });
@@ -380,13 +391,12 @@ app.get("/genCustId", verifyToken, async (req, res) => {
     let inc = parseInt(running) + 1;
     let id = prefix + "-" + inc;
 
-    if (inc > rangeStart && inc < rangeEnd) {
-      updateCustRunningNo(inc);
-      // postProduct();
-      res.send({ message: id });
-    } else {
-      res.send({ message: "ID Range did not match" });
-    }
+    // if (inc > rangeStart && inc < rangeEnd) {
+    //   updateCustRunningNo(inc);
+    //   res.send({ message: id });
+    // } else {
+    //   res.send({ message: "ID Range did not match" });
+    // }
   });
 });
 
