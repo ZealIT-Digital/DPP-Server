@@ -391,12 +391,12 @@ app.get("/genCustId", verifyToken, async (req, res) => {
     let inc = parseInt(running) + 1;
     let id = prefix + "-" + inc;
 
-    // if (inc > rangeStart && inc < rangeEnd) {
-    //   updateCustRunningNo(inc);
-    //   res.send({ message: id });
-    // } else {
-    //   res.send({ message: "ID Range did not match" });
-    // }
+    if (inc > rangeStart && inc < rangeEnd) {
+      // updateCustRunningNo(inc);
+      res.send({ message: id });
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
   });
 });
 
