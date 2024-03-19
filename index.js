@@ -253,14 +253,13 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
 
       if (customerExist == false) {
         const postedCustomer = await postCustomer(customerData);
+
         let idDetails = await custID();
-        let prefix = idDetails.prefix;
         let running = idDetails.runningNumber;
         let rangeStart = idDetails.rangeStart;
         let rangeEnd = idDetails.rangeEnd;
 
         let inc = parseInt(running) + 1;
-        let id = prefix + "-" + inc;
 
         if (inc > rangeStart && inc < rangeEnd) {
           updateCustRunningNo(inc);
