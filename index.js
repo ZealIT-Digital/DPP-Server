@@ -399,6 +399,62 @@ app.get("/genCustId", verifyToken, async (req, res) => {
   });
 });
 
+app.get("/copyProd/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let { id } = req.params;
+
+    let toCopy = await getProductsById(id);
+
+    let idDetails = await prodID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+
+    let inc = parseInt(running) + 1;
+    let incId = prefix + "-" + inc;
+
+    toCopy.id = incId;
+    delete toCopy._id;
+    if (inc > rangeStart && inc < rangeEnd) {
+      await updateProdRunningNo(inc);
+      let prodCopy = await postProduct(toCopy);
+      res.send(postProduct);
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
+  });
+});
+
+app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let { id } = req.params;
+
+    let toCopy = await getCustomerById(id);
+
+    let idDetails = await custID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+
+    let inc = parseInt(running) + 1;
+    let incId = prefix + "-" + inc;
+
+    toCopy.id = incId;
+    delete toCopy._id;
+    if (inc > rangeStart && inc < rangeEnd) {
+      await updateCustRunningNo(inc);
+      let custCopy = await postCustomer(toCopy);
+
+      res.send(custCopy);
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
+    console.log(idDetails);
+  });
+});
+
 app.listen(PORT, () =>
   console.log("The server has started in local host ", PORT)
 );
