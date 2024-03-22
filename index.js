@@ -441,7 +441,12 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     let inc = parseInt(running) + 1;
     let incId = prefix + "-" + inc;
 
+    toCopy.name = `Copied ${id}`;
     toCopy.id = incId;
+    toCopy.descreption = "";
+    toCopy.addressL1 = "";
+    toCopy.addressL2 = "";
+
     delete toCopy._id;
     if (inc > rangeStart && inc < rangeEnd) {
       await updateCustRunningNo(inc);
