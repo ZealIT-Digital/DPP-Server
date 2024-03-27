@@ -17,6 +17,7 @@ import {
   updateCustomer,
   getUiTemplate,
   postUiTemplate,
+  updateUiTemplate,
   getAllProducts,
   prodID,
   updateProdRunningNo,
@@ -346,27 +347,31 @@ app.post("/postProductDetailsUI/:id", async (req, res) => {
   let { id } = req.params;
   let data = req.body;
 
-  let idDetails = await templateID();
-  let prefix = idDetails.prefix;
-  let running = idDetails.runningNumber;
-  let rangeStart = idDetails.rangeStart;
-  let rangeEnd = idDetails.rangeEnd;
+  let prodDetails = await getProductsById(id);
 
-  let inc = parseInt(running) + 1;
-  let tempId = prefix + "-" + inc;
-
-  data.templateId = tempId;
-  console.log(inc);
-
-  if (inc > rangeStart && inc < rangeEnd) {
-    const postedTemplate = await postUiTemplate(data);
-    await updateTempRunningNo(inc);
-
-    const updatedProduct = await updateProduct(id, tempId);
-    console.log(updatedProduct);
-    res.send(updatedProduct);
+  if (prodDetails.templateId) {
+    let tId = prodDetails.templateId;
+    let updated = await updateUiTemplate(tId, data);
+    res.send(updated);
   } else {
-    res.send({ message: "ID Range did not match" });
+    let idDetails = await templateID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+    let inc = parseInt(running) + 1;
+    let tempId = prefix + "-" + inc;
+    data.templateId = tempId;
+    console.log(inc);
+    if (inc > rangeStart && inc < rangeEnd) {
+      const postedTemplate = await postUiTemplate(data);
+      await updateTempRunningNo(inc);
+      const updatedProduct = await updateProduct(id, tempId);
+      console.log(updatedProduct);
+      res.send(updatedProduct);
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
   }
 });
 

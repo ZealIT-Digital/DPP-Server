@@ -128,6 +128,17 @@ async function postUiTemplate(data) {
   return UiTemplate;
 }
 
+async function updateUiTemplate(id, data) {
+  let upData = data;
+  upData.templateId = id;
+  const updated = await client
+    .db("DigitalProductPassport")
+    .collection("UiTemplateMaster")
+    .replaceOne({ templateId: id }, data);
+  console.log(upData);
+  return updated;
+}
+
 async function prodID() {
   const productDetail = await client
     .db("DigitalProductPassport")
@@ -209,6 +220,7 @@ export {
   deleteCustomer,
   getUiTemplate,
   postUiTemplate,
+  updateUiTemplate,
   getAllProducts,
   prodID,
   updateProdRunningNo,
