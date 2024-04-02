@@ -436,7 +436,7 @@ app.get("/copyProd/:id", verifyToken, async (req, res) => {
     if (inc > rangeStart && inc < rangeEnd) {
       await updateProdRunningNo(inc);
       let prodCopy = await postProduct(toCopy);
-      res.send(postProduct);
+      res.send(prodCopy);
     } else {
       res.send({ message: "ID Range did not match" });
     }
