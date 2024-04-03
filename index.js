@@ -27,6 +27,7 @@ import {
   updateCustRunningNo,
   updateTempRunningNo,
   deleteProduct,
+  updateProductHeader,
 } from "./helper.js";
 
 dotenv.config();
@@ -281,6 +282,20 @@ app.post("/postProduct", verifyToken, async (req, res) => {
     } else {
       let productData = req.body;
       const postedProductData = await postProduct(productData);
+      res.send(postedProductData);
+    }
+  });
+});
+
+app.post("/updateProductHeader/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      let productData = req.body;
+      const postedProductData = await updateProductHeader(productData);
       res.send(postedProductData);
     }
   });

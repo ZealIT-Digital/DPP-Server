@@ -69,6 +69,24 @@ async function postProduct(productData) {
   return postedProductData;
 }
 
+async function updateProductHeader(data) {
+  let filter = { id: data.id };
+  // const options = { upsert: true };
+  let update = {
+    $set: {
+      name: data.name,
+      category: data.category,
+      imageUrl: data.imageUrl,
+      description: data.description,
+    },
+  };
+  const updatedDetails = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .updateOne(filter, update);
+  return updatedDetails;
+}
+
 async function updateProduct(productId, tempID) {
   let filter = { id: productId };
   // const options = { upsert: true };
@@ -230,4 +248,5 @@ export {
   custID,
   updateCustRunningNo,
   deleteProduct,
+  updateProductHeader,
 };
