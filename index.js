@@ -345,6 +345,18 @@ app.get("/getUiTemplate/:id", async (req, res) => {
   res.send(UiTemplate);
 });
 
+app.get("/getProductDetailsUI/:id", async (req, res) => {
+  let { id } = req.params;
+
+  let prodData = await getProductsById(id);
+
+  if (prodData.templateId) {
+    let tempId = prodData.templateId;
+    let templateData = await getUiTemplate(tempId);
+    res.send(templateData);
+  }
+});
+
 app.post("/postProductDetailsUI/:id", async (req, res) => {
   let { id } = req.params;
   let data = req.body;
