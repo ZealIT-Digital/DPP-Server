@@ -27,6 +27,7 @@ import {
   updateTempRunningNo,
   deleteProduct,
   updateProductHeader,
+  getAllUiId,
 } from "./helper.js";
 
 dotenv.config();
@@ -355,6 +356,11 @@ app.get("/getProductDetailsUI/:id", async (req, res) => {
     let templateData = await getUiTemplate(tempId);
     res.send(templateData);
   }
+});
+
+app.get("/getAllUiId", async (req, res) => {
+  let uiIds = await getAllUiId();
+  res.send(uiIds);
 });
 
 app.post("/postProductDetailsUI/:id", async (req, res) => {
