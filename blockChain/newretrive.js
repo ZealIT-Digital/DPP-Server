@@ -43,17 +43,3 @@ export async function retrieveData(txHash) {
     console.error("Error:", error);
   }
 }
-
-// Create interface to read user input
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
-
-// // Ask user for transaction hash
-// rl.question("Enter transaction hash: ", async (txHash) => {
-//   // Call function to retrieve ABI-encoded data for the provided transaction hash
-//   await getABIEncodedData(txHash);
-//   // Close readline interface
-//   rl.close();
-// });
