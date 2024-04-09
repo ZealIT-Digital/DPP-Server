@@ -29,6 +29,8 @@ import {
   updateProductHeader,
   getAllUiId,
 } from "./helper.js";
+import { addData } from "./blockChain/blockchain.js";
+import { retrieveData } from "./blockChain/newretrive.js";
 
 dotenv.config();
 const app = express();
@@ -491,6 +493,30 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     }
     console.log(idDetails);
   });
+});
+
+app.post(`/blockChain/post`, async (req, res) => {
+  let data = req.body;
+  let bcResult = await addData(data);
+  let transactionHash = bcResult.transactionHash;
+
+  data.bcTransactionHash = transactionHash;
+
+  // if (transactionHash) {
+  //   let mdbResult = await postProduct(data);
+  //   res.send(mdbResult);
+  // } else {
+  //   res.send("Error: Data not posted to Block Chain");
+  // }
+  res.send(transactionHash);
+});
+
+app.get(`/blockChain/retrieve/:id`, async (req, res) => {
+  let { id } = req.params;
+
+  let bcResult = await retrieveData(id);
+
+  res.send(bcResult);
 });
 
 app.listen(PORT, () =>
