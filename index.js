@@ -499,7 +499,7 @@ app.post(`/blockChain/post`, async (req, res) => {
   let data = req.body;
 
   let bcResult = await addData(data);
-  // let transactionHash = bcResult.transactionHash;
+  let transactionHash = bcResult.transactionHash;
   // data.bcTransactionHash = transactionHash;
 
   // if (transactionHash) {
@@ -508,6 +508,7 @@ app.post(`/blockChain/post`, async (req, res) => {
   // } else {
   //   res.send("Error: Data not posted to Block Chain");
   // }
+  console.log(transactionHash);
   res.send(bcResult);
 });
 
