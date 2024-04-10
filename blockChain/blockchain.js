@@ -135,5 +135,3 @@ export async function addData(data) {
     console.error("Error in main:", error);
   }
 }
-
-

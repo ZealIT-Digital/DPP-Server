@@ -497,18 +497,18 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
 
 app.post(`/blockChain/post`, async (req, res) => {
   let data = req.body;
+
   let bcResult = await addData(data);
-  let transactionHash = bcResult.transactionHash;
+  // let transactionHash = bcResult.transactionHash;
+  // data.bcTransactionHash = transactionHash;
 
-  data.bcTransactionHash = transactionHash;
-
-  if (transactionHash) {
-    let mdbResult = await postProduct(data);
-    res.send(mdbResult);
-  } else {
-    res.send("Error: Data not posted to Block Chain");
-  }
-  res.send(transactionHash);
+  // if (transactionHash) {
+  //   let mdbResult = await postProduct(data);
+  //   res.send(mdbResult);
+  // } else {
+  //   res.send("Error: Data not posted to Block Chain");
+  // }
+  res.send(bcResult);
 });
 
 app.get(`/blockChain/retrieve/:id`, async (req, res) => {
