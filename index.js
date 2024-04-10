@@ -502,12 +502,12 @@ app.post(`/blockChain/post`, async (req, res) => {
 
   data.bcTransactionHash = transactionHash;
 
-  // if (transactionHash) {
-  //   let mdbResult = await postProduct(data);
-  //   res.send(mdbResult);
-  // } else {
-  //   res.send("Error: Data not posted to Block Chain");
-  // }
+  if (transactionHash) {
+    let mdbResult = await postProduct(data);
+    res.send(mdbResult);
+  } else {
+    res.send("Error: Data not posted to Block Chain");
+  }
   res.send(transactionHash);
 });
 
