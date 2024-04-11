@@ -300,7 +300,6 @@ app.post("/postProduct", verifyToken, async (req, res) => {
 
       uiData.templateId = tempId;
       prodData.templateId = tempId;
-      console.log(inc);
 
       if (inc > rangeStart && inc < rangeEnd) {
         const postedTemplate = await postUiTemplate(uiData);
@@ -453,21 +452,47 @@ app.get("/copyProd/:id", verifyToken, async (req, res) => {
     let { id } = req.params;
 
     let toCopy = await getProductsById(id);
+    let prodCat = toCopy.category;
 
-    let idDetails = await prodID();
-    let prefix = idDetails.prefix;
-    let running = idDetails.runningNumber;
-    let rangeStart = idDetails.rangeStart;
-    let rangeEnd = idDetails.rangeEnd;
+    let uiData = await getUiMasterTemplatebyCategory(prodCat);
 
-    let inc = parseInt(running) + 1;
-    let incId = prefix + "-" + inc;
+    let prodIdDetails = await prodID();
+    let prodPrefix = prodIdDetails.prefix;
+    let prodRunning = prodIdDetails.runningNumber;
+    let prodRangeStart = prodIdDetails.rangeStart;
+    let prodRangeEnd = prodIdDetails.rangeEnd;
 
-    toCopy.id = incId;
+    let prodInc = parseInt(prodRunning) + 1;
+    let prodIncId = prodPrefix + "-" + prodInc;
+
+    let templateIdDetails = await templateID();
+    let templatePrefix = templateIdDetails.prefix;
+    let templateRunning = templateIdDetails.runningNumber;
+    let templateRangeStart = templateIdDetails.rangeStart;
+    let templateRangeEnd = templateIdDetails.rangeEnd;
+
+    let templateInc = parseInt(templateRunning) + 1;
+    let templateIncId = templatePrefix + "-" + templateInc;
+
+    delete uiData._id;
     delete toCopy._id;
-    if (inc > rangeStart && inc < rangeEnd) {
-      await updateProdRunningNo(inc);
+
+    toCopy.id = prodIncId;
+    toCopy.templateId = templateIncId;
+
+    uiData.templateId = templateIncId;
+
+    if (
+      prodInc > prodRangeStart &&
+      prodInc < prodRangeEnd &&
+      templateInc > templateRangeStart &&
+      templateInc < templateRangeEnd
+    ) {
+      await updateProdRunningNo(prodInc);
+      await updateTempRunningNo(templateInc);
+
       let prodCopy = await postProduct(toCopy);
+      let postUiCopy = await postUiTemplate(uiData);
       res.send(prodCopy);
     } else {
       res.send({ message: "ID Range did not match" });
