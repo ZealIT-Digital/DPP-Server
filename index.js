@@ -28,6 +28,8 @@ import {
   deleteProduct,
   updateProductHeader,
   getAllUiId,
+  getUiMasterTemplatebyCategory,
+  updateUi,
 } from "./helper.js";
 import { addData } from "./blockChain/blockchain.js";
 import { retrieveData } from "./blockChain/newretrive.js";
@@ -282,9 +284,35 @@ app.post("/postProduct", verifyToken, async (req, res) => {
       console.log(err);
       res.sendStatus(403);
     } else {
-      let productData = req.body;
-      const postedProductData = await postProduct(productData);
-      res.send(postedProductData);
+      let prodData = req.body;
+      let prodCat = prodData.category;
+      let uiData = await getUiMasterTemplatebyCategory(prodCat);
+      delete uiData._id;
+
+      let idDetails = await templateID();
+      let prefix = idDetails.prefix;
+      let running = idDetails.runningNumber;
+      let rangeStart = idDetails.rangeStart;
+      let rangeEnd = idDetails.rangeEnd;
+
+      let inc = parseInt(running) + 1;
+      let tempId = prefix + "-" + inc;
+
+      uiData.templateId = tempId;
+      prodData.templateId = tempId;
+      console.log(inc);
+
+      if (inc > rangeStart && inc < rangeEnd) {
+        const postedTemplate = await postUiTemplate(uiData);
+        await updateTempRunningNo(inc);
+
+        const postedProductData = await postProduct(prodData);
+        console.log(postedProductData);
+        res.send(postedProductData);
+      } else {
+        res.send({ message: "ID Range did not match" });
+      }
+      console.log(uiData);
     }
   });
 });
@@ -369,28 +397,14 @@ app.post("/postProductDetailsUI/:id", async (req, res) => {
   let { id } = req.params;
   let data = req.body;
 
-  let idDetails = await templateID();
-  let prefix = idDetails.prefix;
-  let running = idDetails.runningNumber;
-  let rangeStart = idDetails.rangeStart;
-  let rangeEnd = idDetails.rangeEnd;
+  let prodData = await getProductsById(id);
 
-  let inc = parseInt(running) + 1;
-  let tempId = prefix + "-" + inc;
+  let templateId = prodData.templateId;
+  data.templateId = templateId;
 
-  data.templateId = tempId;
-  console.log(inc);
+  let updatedUI = await updateUi(templateId, data);
 
-  if (inc > rangeStart && inc < rangeEnd) {
-    const postedTemplate = await postUiTemplate(data);
-    await updateTempRunningNo(inc);
-
-    const updatedProduct = await updateProduct(id, tempId);
-    console.log(updatedProduct);
-    res.send(updatedProduct);
-  } else {
-    res.send({ message: "ID Range did not match" });
-  }
+  res.send(updatedUI);
 });
 
 app.get("/genProdId", verifyToken, async (req, res) => {

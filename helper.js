@@ -135,6 +135,15 @@ async function getUiTemplate(id) {
   return UiTemplate;
 }
 
+async function getUiMasterTemplatebyCategory(category) {
+  const UiTemplate = await client
+    .db("DigitalProductPassport")
+    .collection("UiTemplateMaster")
+    .findOne({ templateCategory: category });
+
+  return UiTemplate;
+}
+
 async function getAllUiId() {
   const UiTemplate = await client
     .db("DigitalProductPassport")
@@ -152,6 +161,15 @@ async function postUiTemplate(data) {
     .collection("UiTemplateMaster")
     .insertOne(data);
   return UiTemplate;
+}
+
+async function updateUi(tempId, data) {
+  const postedUIData = await client
+    .db("DigitalProductPassport")
+    .collection("UiTemplateMaster")
+    .replaceOne({ templateId: tempId }, data);
+
+  return postedUIData;
 }
 
 async function prodID() {
@@ -243,4 +261,6 @@ export {
   deleteProduct,
   updateProductHeader,
   getAllUiId,
+  getUiMasterTemplatebyCategory,
+  updateUi,
 };
