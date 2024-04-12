@@ -40,7 +40,6 @@ async function getCustomerById(id) {
     .collection("CustomerMasterData")
     .findOne({ id: id }, function (err, result) {
       if (err) throw err;
-      console.log(result.name);
     });
   return customerData;
 }
@@ -78,6 +77,7 @@ async function updateProductHeader(data) {
       category: data.category,
       imageUrl: data.imageUrl,
       description: data.description,
+      templateId: data.templateId,
     },
   };
   const updatedDetails = await client
@@ -99,7 +99,6 @@ async function updateProduct(productId, tempID) {
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .updateOne(filter, update);
-  console.log({ prId: productId, tmID: tempID });
   return updatedDetails;
 }
 
@@ -128,12 +127,30 @@ async function deleteProduct(id) {
 }
 
 async function getUiTemplate(id) {
-  console.log(id);
-
   const UiTemplate = await client
     .db("DigitalProductPassport")
     .collection("UiTemplateMaster")
     .findOne({ templateId: id });
+
+  return UiTemplate;
+}
+
+async function getUiMasterTemplatebyCategory(category) {
+  const UiTemplate = await client
+    .db("DigitalProductPassport")
+    .collection("UiTemplateMaster")
+    .findOne({ templateCategory: category });
+
+  return UiTemplate;
+}
+
+async function getAllUiId() {
+  const UiTemplate = await client
+    .db("DigitalProductPassport")
+    .collection("UiTemplateMaster")
+    .find({})
+    .project({ templateId: 1 })
+    .toArray();
 
   return UiTemplate;
 }
@@ -146,15 +163,13 @@ async function postUiTemplate(data) {
   return UiTemplate;
 }
 
-async function updateUiTemplate(id, data) {
-  let upData = data;
-  upData.templateId = id;
-  const updated = await client
+async function updateUi(tempId, data) {
+  const postedUIData = await client
     .db("DigitalProductPassport")
     .collection("UiTemplateMaster")
-    .replaceOne({ templateId: id }, data);
-  console.log(upData);
-  return updated;
+    .replaceOne({ templateId: tempId }, data);
+
+  return postedUIData;
 }
 
 async function prodID() {
@@ -192,7 +207,6 @@ async function updateProdRunningNo(num) {
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .updateOne(filter, update);
-  console.log(updatedDetails);
   return updatedDetails;
 }
 
@@ -207,7 +221,6 @@ async function updateTempRunningNo(num) {
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .updateOne(filter, update);
-  console.log(updatedDetails);
   return updatedDetails;
 }
 
@@ -222,7 +235,6 @@ async function updateCustRunningNo(num) {
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .updateOne(filter, update);
-  console.log(updatedDetails);
   return updatedDetails;
 }
 
@@ -238,7 +250,6 @@ export {
   deleteCustomer,
   getUiTemplate,
   postUiTemplate,
-  updateUiTemplate,
   getAllProducts,
   prodID,
   updateProdRunningNo,
@@ -249,4 +260,7 @@ export {
   updateCustRunningNo,
   deleteProduct,
   updateProductHeader,
+  getAllUiId,
+  getUiMasterTemplatebyCategory,
+  updateUi,
 };

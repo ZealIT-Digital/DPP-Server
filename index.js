@@ -17,7 +17,6 @@ import {
   updateCustomer,
   getUiTemplate,
   postUiTemplate,
-  updateUiTemplate,
   getAllProducts,
   prodID,
   updateProdRunningNo,
@@ -28,7 +27,12 @@ import {
   updateTempRunningNo,
   deleteProduct,
   updateProductHeader,
+  getAllUiId,
+  getUiMasterTemplatebyCategory,
+  updateUi,
 } from "./helper.js";
+import { addData } from "./blockChain/blockchain.js";
+import { retrieveData } from "./blockChain/newretrive.js";
 
 dotenv.config();
 const app = express();
@@ -280,9 +284,36 @@ app.post("/postProduct", verifyToken, async (req, res) => {
       console.log(err);
       res.sendStatus(403);
     } else {
-      let productData = req.body;
-      const postedProductData = await postProduct(productData);
-      res.send(postedProductData);
+      let prodData = req.body;
+      let prodCat = prodData.category;
+      let uiData = await getUiMasterTemplatebyCategory(prodCat);
+      delete uiData._id;
+
+      let idDetails = await templateID();
+      let prefix = idDetails.prefix;
+      let running = idDetails.runningNumber;
+      let rangeStart = idDetails.rangeStart;
+      let rangeEnd = idDetails.rangeEnd;
+
+      let inc = parseInt(running) + 1;
+      let tempId = prefix + "-" + inc;
+
+      delete uiData.templateCategory;
+
+      uiData.templateId = tempId;
+      prodData.templateId = tempId;
+
+      if (inc > rangeStart && inc < rangeEnd) {
+        const postedTemplate = await postUiTemplate(uiData);
+        await updateTempRunningNo(inc);
+
+        const postedProductData = await postProduct(prodData);
+        console.log(postedProductData);
+        res.send(postedProductData);
+      } else {
+        res.send({ message: "ID Range did not match" });
+      }
+      console.log(uiData);
     }
   });
 });
@@ -358,36 +389,23 @@ app.get("/getProductDetailsUI/:id", async (req, res) => {
   }
 });
 
+app.get("/getAllUiId", async (req, res) => {
+  let uiIds = await getAllUiId();
+  res.send(uiIds);
+});
+
 app.post("/postProductDetailsUI/:id", async (req, res) => {
   let { id } = req.params;
   let data = req.body;
 
-  let prodDetails = await getProductsById(id);
+  let prodData = await getProductsById(id);
 
-  if (prodDetails.templateId) {
-    let tId = prodDetails.templateId;
-    let updated = await updateUiTemplate(tId, data);
-    res.send(updated);
-  } else {
-    let idDetails = await templateID();
-    let prefix = idDetails.prefix;
-    let running = idDetails.runningNumber;
-    let rangeStart = idDetails.rangeStart;
-    let rangeEnd = idDetails.rangeEnd;
-    let inc = parseInt(running) + 1;
-    let tempId = prefix + "-" + inc;
-    data.templateId = tempId;
-    console.log(inc);
-    if (inc > rangeStart && inc < rangeEnd) {
-      const postedTemplate = await postUiTemplate(data);
-      await updateTempRunningNo(inc);
-      const updatedProduct = await updateProduct(id, tempId);
-      console.log(updatedProduct);
-      res.send(updatedProduct);
-    } else {
-      res.send({ message: "ID Range did not match" });
-    }
-  }
+  let templateId = prodData.templateId;
+  data.templateId = templateId;
+
+  let updatedUI = await updateUi(templateId, data);
+
+  res.send(updatedUI);
 });
 
 app.get("/genProdId", verifyToken, async (req, res) => {
@@ -436,21 +454,48 @@ app.get("/copyProd/:id", verifyToken, async (req, res) => {
     let { id } = req.params;
 
     let toCopy = await getProductsById(id);
+    let prodCat = toCopy.category;
 
-    let idDetails = await prodID();
-    let prefix = idDetails.prefix;
-    let running = idDetails.runningNumber;
-    let rangeStart = idDetails.rangeStart;
-    let rangeEnd = idDetails.rangeEnd;
+    let uiData = await getUiMasterTemplatebyCategory(prodCat);
 
-    let inc = parseInt(running) + 1;
-    let incId = prefix + "-" + inc;
+    let prodIdDetails = await prodID();
+    let prodPrefix = prodIdDetails.prefix;
+    let prodRunning = prodIdDetails.runningNumber;
+    let prodRangeStart = prodIdDetails.rangeStart;
+    let prodRangeEnd = prodIdDetails.rangeEnd;
 
-    toCopy.id = incId;
+    let prodInc = parseInt(prodRunning) + 1;
+    let prodIncId = prodPrefix + "-" + prodInc;
+
+    let templateIdDetails = await templateID();
+    let templatePrefix = templateIdDetails.prefix;
+    let templateRunning = templateIdDetails.runningNumber;
+    let templateRangeStart = templateIdDetails.rangeStart;
+    let templateRangeEnd = templateIdDetails.rangeEnd;
+
+    let templateInc = parseInt(templateRunning) + 1;
+    let templateIncId = templatePrefix + "-" + templateInc;
+
+    delete uiData._id;
     delete toCopy._id;
-    if (inc > rangeStart && inc < rangeEnd) {
-      await updateProdRunningNo(inc);
+    delete uiData.templateCategory;
+
+    toCopy.id = prodIncId;
+    toCopy.templateId = templateIncId;
+
+    uiData.templateId = templateIncId;
+
+    if (
+      prodInc > prodRangeStart &&
+      prodInc < prodRangeEnd &&
+      templateInc > templateRangeStart &&
+      templateInc < templateRangeEnd
+    ) {
+      await updateProdRunningNo(prodInc);
+      await updateTempRunningNo(templateInc);
+
       let prodCopy = await postProduct(toCopy);
+      let postUiCopy = await postUiTemplate(uiData);
       res.send(prodCopy);
     } else {
       res.send({ message: "ID Range did not match" });
@@ -473,7 +518,7 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     let inc = parseInt(running) + 1;
     let incId = prefix + "-" + inc;
 
-    toCopy.name = `Copied ${id}`;
+    toCopy.name = Copied ${id};
     toCopy.id = incId;
     toCopy.descreption = "";
     toCopy.addressL1 = "";
@@ -490,6 +535,31 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     }
     console.log(idDetails);
   });
+});
+
+app.post(/blockChain/post, async (req, res) => {
+  let data = req.body;
+
+  let bcResult = await addData(data);
+  let transactionHash = bcResult.transactionHash;
+  // data.bcTransactionHash = transactionHash;
+
+  // if (transactionHash) {
+  //   let mdbResult = await postProduct(data);
+  //   res.send(mdbResult);
+  // } else {
+  //   res.send("Error: Data not posted to Block Chain");
+  // }
+  console.log(transactionHash);
+  res.send(bcResult);
+});
+
+app.get(/blockChain/retrieve/:id, async (req, res) => {
+  let { id } = req.params;
+
+  let bcResult = await retrieveData(id);
+
+  res.send(bcResult);
 });
 
 app.listen(PORT, () =>
