@@ -298,6 +298,8 @@ app.post("/postProduct", verifyToken, async (req, res) => {
       let inc = parseInt(running) + 1;
       let tempId = prefix + "-" + inc;
 
+      delete uiData.templateCategory;
+
       uiData.templateId = tempId;
       prodData.templateId = tempId;
 
@@ -476,6 +478,7 @@ app.get("/copyProd/:id", verifyToken, async (req, res) => {
 
     delete uiData._id;
     delete toCopy._id;
+    delete uiData.templateCategory;
 
     toCopy.id = prodIncId;
     toCopy.templateId = templateIncId;
