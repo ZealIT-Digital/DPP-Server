@@ -518,7 +518,7 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     let inc = parseInt(running) + 1;
     let incId = prefix + "-" + inc;
 
-    toCopy.name = `Copied ${id}`;
+    toCopy.name = Copied ${id};
     toCopy.id = incId;
     toCopy.descreption = "";
     toCopy.addressL1 = "";
@@ -537,7 +537,7 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
   });
 });
 
-app.post(`/blockChain/post`, async (req, res) => {
+app.post(/blockChain/post, async (req, res) => {
   let data = req.body;
 
   let bcResult = await addData(data);
@@ -554,7 +554,7 @@ app.post(`/blockChain/post`, async (req, res) => {
   res.send(bcResult);
 });
 
-app.get(`/blockChain/retrieve/:id`, async (req, res) => {
+app.get(/blockChain/retrieve/:id, async (req, res) => {
   let { id } = req.params;
 
   let bcResult = await retrieveData(id);
