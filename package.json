@@ -1,7 +1,6 @@
 {
   "name": "dpp-server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -20,5 +19,11 @@
     "mongodb": "^6.3.0",
     "nodemon": "^3.0.3",
     "web3": "^4.7.0"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {},
+  "keywords": [],
+  "description": ""
 }

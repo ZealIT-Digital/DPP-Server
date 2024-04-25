@@ -30,6 +30,7 @@ import {
   getAllUiId,
   getUiMasterTemplatebyCategory,
   updateUi,
+  getAllProductCategory,
 } from "./helper.js";
 import { addData } from "./blockChain/blockchain.js";
 import { retrieveData } from "./blockChain/newretrive.js";
@@ -38,13 +39,13 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 9000;
 
-// let mongoURL = process.env.MONGO_URL;
+// let mongoURL = process.env.MONGO_URL; Adding
 let mongoURL =
   "mongodb+srv://zealitdigital:ZealIT-2024@zealit.c3y2eea.mongodb.net/?retryWrites=true&w=majority";
 
@@ -59,6 +60,7 @@ const client = await createConnection();
 
 // Middleware function to verify JWT
 function verifyToken(req, res, next) {
+  console.log(req.headers);
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
@@ -180,6 +182,7 @@ app.get("/getProducts/:id", verifyToken, async (req, res) => {
       let productId = [];
       let productArray = [];
       const customerData = await getCustomerById(id);
+      console.log({ custData: customerData });
 
       for (let i = 0; i < customerData.products.length; i++) {
         productId.push(customerData.products[i].id);
@@ -246,11 +249,11 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
         if (
           allCustomers[i].id == customerData.id ||
           allCustomers[i].name == customerData.name ||
-          allCustomers[i].logoUrl == customerData.logoUrl ||
+          // allCustomers[i].logoUrl == customerData.logoUrl ||
           customerAddress == dbCustomerAddress
         ) {
           customerExist = true;
-          console.log(allCustomers[i]);
+
           break;
         } else {
           null;
@@ -258,6 +261,7 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
       }
 
       if (customerExist == false) {
+        console.log(customerData);
         const postedCustomer = await postCustomer(customerData);
 
         let idDetails = await custID();
@@ -534,6 +538,14 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
       res.send({ message: "ID Range did not match" });
     }
     console.log(idDetails);
+  });
+});
+
+app.get("/getAllProductCategory", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let categories = await getAllProductCategory();
+
+    res.send(categories);
   });
 });
 

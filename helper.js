@@ -238,6 +238,15 @@ async function updateCustRunningNo(num) {
   return updatedDetails;
 }
 
+async function getAllProductCategory() {
+  let categories = await client
+    .db("DigitalProductPassport")
+    .collection("ProductCategoryMasterData")
+    .find({})
+    .toArray();
+  return categories;
+}
+
 export {
   createUser,
   login,
@@ -263,4 +272,5 @@ export {
   getAllUiId,
   getUiMasterTemplatebyCategory,
   updateUi,
+  getAllProductCategory,
 };
