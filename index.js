@@ -95,6 +95,7 @@ app.post("/postUser", async (req, res) => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
+        phoneNumber: userData.phoneNumber,
         password: hash,
         role: "user",
       };
