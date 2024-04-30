@@ -223,7 +223,21 @@ async function updateTempRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
-
+async function PostLogs(logs) {
+  const PostedLogs = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerLogMaster")
+    .insertOne(logs);
+  return PostLogs;
+}
+async function getAllLogs(){
+  const allLogs = await client
+  .db('DigitalProductPassport')
+  .collection("CustomerLogMaster")
+  .find()
+  .toArray();
+  return allLogs
+}
 async function updateCustRunningNo(num) {
   let filter = { idType: "Customer" };
   let update = {
@@ -238,17 +252,10 @@ async function updateCustRunningNo(num) {
   return updatedDetails;
 }
 
-async function getAllProductCategory() {
-  let categories = await client
-    .db("DigitalProductPassport")
-    .collection("ProductCategoryMasterData")
-    .find({})
-    .toArray();
-  return categories;
-}
-
 export {
   createUser,
+  PostLogs,
+  getAllLogs,
   login,
   getAllCustomers,
   getCustomerById,
@@ -272,5 +279,4 @@ export {
   getAllUiId,
   getUiMasterTemplatebyCategory,
   updateUi,
-  getAllProductCategory,
 };

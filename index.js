@@ -7,45 +7,64 @@ import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
 import {
   createUser,
-  login,
+  login
+} 
+from "./helpers/UserHelper.js"
+
+ import {
   getAllCustomers,
-  getCustomerById,
-  getProductsById,
-  postCustomer,
-  postProduct,
-  deleteCustomer,
-  updateCustomer,
-  getUiTemplate,
-  postUiTemplate,
+    getCustomerById,
+    postCustomer,
+    updateCustomer,
+    deleteCustomer,
+    custID,
+    updateCustRunningNo
+ }
+ from "./helpers/CustomerHelper.js"
+ import{
   getAllProducts,
-  prodID,
-  updateProdRunningNo,
-  templateID,
-  updateProduct,
-  custID,
-  updateCustRunningNo,
-  updateTempRunningNo,
-  deleteProduct,
+  getProductsById,
+  postProduct,
   updateProductHeader,
-  getAllUiId,
+  updateProduct,
+  deleteProduct,
+  prodID,
+  updateProdRunningNo
+ }
+ from "./helpers/ProductHelper.js"
+ import{
+  getUiTemplate,
   getUiMasterTemplatebyCategory,
+  getAllUiId,
+  postUiTemplate,
+  PostLogs,
+  getAllLogs,
   updateUi,
-  getAllProductCategory,
-} from "./helper.js";
+  templateID,
+  updateTempRunningNo
+ }
+ from "./helpers/UiHelper.js"
+
 import { addData } from "./blockChain/blockchain.js";
 import { retrieveData } from "./blockChain/newretrive.js";
+
+import { entryRouter } from "./routes/entry.js";
+import {productRouter } from "./routes/productData.js";
+import {customerRouter } from "./routes/customerData.js";
+import { uiRouter } from "./routes/uidata.js";
+
 
 dotenv.config();
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 9000;
 
-// let mongoURL = process.env.MONGO_URL; Adding
+// let mongoURL = process.env.MONGO_URL;
 let mongoURL =
   "mongodb+srv://zealitdigital:ZealIT-2024@zealit.c3y2eea.mongodb.net/?retryWrites=true&w=majority";
 
@@ -60,7 +79,6 @@ const client = await createConnection();
 
 // Middleware function to verify JWT
 function verifyToken(req, res, next) {
-  console.log(req.headers);
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
@@ -82,6 +100,31 @@ app.get("/routVerification", verifyToken, async (req, res) => {
   });
 });
 
+app.post("/postLogs", async (req, res) => {
+  let logData = req.body;
+  res.send(logData)
+  try {
+    // Save logs in the database
+    await PostLogs(logData); // 
+
+    res.status(200)
+  } catch (error) {
+    console.error("Error saving logs:", error);
+    res.status(500)
+  }
+});
+
+app.get("/getAllLogs", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allLogs = await getAllLogs();
+      res.send(allLogs);
+    }
+  });
+});
+
 app.post("/postUser", async (req, res) => {
   let userData = req.body;
   let hashtest = "hello";
@@ -95,7 +138,6 @@ app.post("/postUser", async (req, res) => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
-        phoneNumber: userData.phoneNumber,
         password: hash,
         role: "user",
       };
@@ -140,6 +182,11 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.use("/entry", entryRouter)
+app.use("/product", productRouter)
+app.use("/customer", customerRouter)
+app.use("/ui",uiRouter)
+
 app.get("/", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -151,7 +198,7 @@ app.get("/", verifyToken, async (req, res) => {
   });
 });
 
-app.get("/getAllProducts", verifyToken, async (req, res) => {
+app.get("product/getAllProducts", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -183,7 +230,6 @@ app.get("/getProducts/:id", verifyToken, async (req, res) => {
       let productId = [];
       let productArray = [];
       const customerData = await getCustomerById(id);
-      console.log({ custData: customerData });
 
       for (let i = 0; i < customerData.products.length; i++) {
         productId.push(customerData.products[i].id);
@@ -250,11 +296,11 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
         if (
           allCustomers[i].id == customerData.id ||
           allCustomers[i].name == customerData.name ||
-          // allCustomers[i].logoUrl == customerData.logoUrl ||
+          allCustomers[i].logoUrl == customerData.logoUrl ||
           customerAddress == dbCustomerAddress
         ) {
           customerExist = true;
-
+          console.log(allCustomers[i]);
           break;
         } else {
           null;
@@ -262,7 +308,6 @@ app.post("/postCustomer", verifyToken, async (req, res) => {
       }
 
       if (customerExist == false) {
-        console.log(customerData);
         const postedCustomer = await postCustomer(customerData);
 
         let idDetails = await custID();
@@ -542,14 +587,6 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
   });
 });
 
-app.get("/getAllProductCategory", verifyToken, async (req, res) => {
-  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-    let categories = await getAllProductCategory();
-
-    res.send(categories);
-  });
-});
-
 app.post(`/blockChain/post`, async (req, res) => {
   let data = req.body;
 
@@ -579,4 +616,4 @@ app.listen(PORT, () =>
   console.log("The server has started in local host ", PORT)
 );
 
-export { client };
+export { client, verifyToken };
