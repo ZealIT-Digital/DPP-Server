@@ -44,6 +44,7 @@ from "./helpers/UserHelper.js"
   updateTempRunningNo
  }
  from "./helpers/UiHelper.js"
+ import { getAllIdentity,PostIdentity } from "./helper.js";
 
 import { addData } from "./blockChain/blockchain.js";
 import { retrieveData } from "./blockChain/newretrive.js";
@@ -112,6 +113,31 @@ app.post("/postLogs", async (req, res) => {
     console.error("Error saving logs:", error);
     res.status(500)
   }
+});
+
+app.post("/PostIdentity", async (req, res) => {
+  let identity = req.body;
+  res.send(identity)
+  try {
+    // Save Identity in the database
+    await PostIdentity(identity); // 
+
+    res.status(200)
+  } catch (error) {
+    console.error("Error saving logs:", error);
+    res.status(500)
+  }
+});
+
+app.get("/getAllIdentity", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allIdentity = await getAllIdentity();
+      res.send(allIdentity);
+    }
+  });
 });
 
 app.get("/getAllLogs", verifyToken, async (req, res) => {
@@ -478,6 +504,7 @@ app.get("/genProdId", verifyToken, async (req, res) => {
     }
   });
 });
+
 
 app.get("/genCustId", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {

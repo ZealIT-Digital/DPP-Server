@@ -230,6 +230,21 @@ async function PostLogs(logs) {
     .insertOne(logs);
   return PostLogs;
 }
+async function PostIdentity(identity) {
+  const PostedIdentity = await client
+    .db("DigitalProductPassport")
+    .collection("ComponentMasterData")
+    .insertOne(identity);
+  return PostIdentity;
+}
+async function getAllIdentity(){
+  const allIdentity = await client
+  .db('DigitalProductPassport')
+  .collection("ComponentMasterData")
+  .find()
+  .toArray();
+  return allIdentity
+}
 async function getAllLogs(){
   const allLogs = await client
   .db('DigitalProductPassport')
@@ -279,4 +294,6 @@ export {
   getAllUiId,
   getUiMasterTemplatebyCategory,
   updateUi,
+  PostIdentity,
+  getAllIdentity
 };

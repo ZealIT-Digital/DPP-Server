@@ -2,44 +2,47 @@ import { Web3 } from "web3";
 
 const contractABI = [
   {
-    inputs: [],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "constructor",
+    "inputs": [],
+    "name": "getData",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    constant: true,
-    inputs: [],
-    name: "get",
-    outputs: [
+    "inputs": [
       {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
+        "internalType": "string",
+        "name": "_newData",
+        "type": "string"
+      }
     ],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
+    "name": "storeData",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    constant: false,
-    inputs: [
+    "inputs": [],
+    "name": "storedData",
+    "outputs": [
       {
-        internalType: "string",
-        name: "_value",
-        type: "string",
-      },
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
     ],
-    name: "set",
-    outputs: [],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "function",
-  },
+    "stateMutability": "view",
+    "type": "function"
+  }
 ];
 
-const contractAddress = "0x24942357E3A688ACE7C39710aA6d3C91BA1FAC39"; // Replace with your contract address
+const contractAddress = "0x2774Be1ED36b1a5E146E2cFB4Db66779E8273B6f"; // Replace with your contract address
 const privateKey =
   "0x11c26c2a80395196ba6147dab69ac95c3dc5b8f9aba0bbc753ef85f4384aa76a"; // Replace with your private key
 const web3 = new Web3(
@@ -89,9 +92,9 @@ const contract = new web3.eth.Contract(contractABI, contractAddress);
 async function saveText(text) {
   try {
     const account = web3.eth.accounts.privateKeyToAccount(privateKey);
-    const data = contract.methods.set(text).encodeABI();
+    const data = contract.methods.storeData(text).encodeABI();
     const gas = await contract.methods
-      .set(text)
+      .storeData(text)
       .estimateGas({ from: account.address });
     const tx = {
       from: account.address,
