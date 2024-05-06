@@ -1,10 +1,11 @@
 import express, { response } from "express";
 import bcrypt from "bcrypt";
-import { login } from "../helpers/UserHelper.js";
+import { login, getUserData } from "../helpers/UserHelper.js";
 import jwt from "jsonwebtoken";
 import { userid } from "../helper.js";
 import { createUser } from "../helper.js";
 import { client } from "../index.js";
+
 let router = express.Router();
 
 // Middleware function to verify JWT
