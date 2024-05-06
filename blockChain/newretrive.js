@@ -35,9 +35,6 @@ export async function retrieveData(txHash) {
       }
       stringParam += String.fromCharCode(parseInt(byte, 16));
     }
-
-    console.log("Function Signature:", functionSignature);
-    console.log("Decoded Parameters:", [uint256Param, stringParam]);
     return stringParam;
   } catch (error) {
     console.error("Error:", error);

@@ -270,17 +270,21 @@ async function getAllRoles() {
   return allRoles;
 }
 async function PostHistory(History) {
-  let filter = { id: History.userId };
-  let update = {
-    $set: {
-      History: History,
-    },
-  };
-  const PostedHistory = await client
-    .db("DigitalProductPassport")
-    .collection("UserMasterData")
-    .updateOne(filter, update);
-  return PostedHistory;
+  if (History.productName) {
+    let filter = { email: History.userEmail };
+    let update = {
+      $addToSet: {
+        history: History,
+      },
+    };
+    const PostedHistory = await client
+      .db("DigitalProductPassport")
+      .collection("UserMasterData")
+      .updateOne(filter, update);
+    return PostedHistory;
+  } else {
+    return "ok";
+  }
 }
 async function getAllLogs() {
   const allLogs = await client
