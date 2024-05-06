@@ -7,6 +7,19 @@ import { createUser } from "../helper.js";
 import { client } from "../index.js";
 let router = express.Router();
 
+// Middleware function to verify JWT
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+    next();
+  } else {
+    res.sendStatus(403);
+  }
+}
+
 router.post("/login", async (req, res) => {
   let data = req.body;
 
@@ -70,6 +83,14 @@ async function updateusrRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
+router.post("/getUserData", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let { email } = req.body;
+    console.log(email);
+    let userData = await getUserData(email);
+    res.send(userData);
+  });
+});
 router.post("/postUser", async (req, res) => {
   let userData = req.body;
   let userPassword = userData.password;
