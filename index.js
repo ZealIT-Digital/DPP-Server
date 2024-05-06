@@ -5,23 +5,18 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
-import {
-  createUser,
-  login
-} 
-from "./helpers/UserHelper.js"
+import { createUser, login } from "./helpers/UserHelper.js";
 
- import {
+import {
   getAllCustomers,
-    getCustomerById,
-    postCustomer,
-    updateCustomer,
-    deleteCustomer,
-    custID,
-    updateCustRunningNo
- }
- from "./helpers/CustomerHelper.js"
- import{
+  getCustomerById,
+  postCustomer,
+  updateCustomer,
+  deleteCustomer,
+  custID,
+  updateCustRunningNo,
+} from "./helpers/CustomerHelper.js";
+import {
   getAllProducts,
   getProductsById,
   postProduct,
@@ -29,10 +24,9 @@ from "./helpers/UserHelper.js"
   updateProduct,
   deleteProduct,
   prodID,
-  updateProdRunningNo
- }
- from "./helpers/ProductHelper.js"
- import{
+  updateProdRunningNo,
+} from "./helpers/ProductHelper.js";
+import {
   getUiTemplate,
   getUiMasterTemplatebyCategory,
   getAllUiId,
@@ -41,19 +35,23 @@ from "./helpers/UserHelper.js"
   getAllLogs,
   updateUi,
   templateID,
-  updateTempRunningNo
- }
- from "./helpers/UiHelper.js"
- import { getAllIdentity,PostIdentity } from "./helper.js";
+  updateTempRunningNo,
+} from "./helpers/UiHelper.js";
+import {
+  getAllIdentity,
+  PostIdentity,
+  getAllHistory,
+  PostHistory,
+  getAllRoles,
+} from "./helper.js";
 
 import { addData } from "./blockChain/blockchain.js";
 import { retrieveData } from "./blockChain/newretrive.js";
 
 import { entryRouter } from "./routes/entry.js";
-import {productRouter } from "./routes/productData.js";
-import {customerRouter } from "./routes/customerData.js";
+import { productRouter } from "./routes/productData.js";
+import { customerRouter } from "./routes/customerData.js";
 import { uiRouter } from "./routes/uidata.js";
-
 
 dotenv.config();
 const app = express();
@@ -101,31 +99,67 @@ app.get("/routVerification", verifyToken, async (req, res) => {
   });
 });
 
-app.post("/postLogs", async (req, res) => {
-  let logData = req.body;
-  res.send(logData)
+app.get("/getAllHistory", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allHistory = await getAllHistory();
+      res.send(allHistory);
+    }
+  });
+});
+
+app.get("/getAllRoles", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allRoles = await getAllRoles();
+      res.send(allRoles);
+      return allRoles;
+    }
+  });
+});
+
+app.post("/postHistory", async (req, res) => {
+  let History = req.body;
+  res.send(History);
   try {
     // Save logs in the database
-    await PostLogs(logData); // 
+    await PostHistory(History); //
 
-    res.status(200)
+    res.status(200);
+  } catch (error) {
+    console.error("Error saving History:", error);
+    res.status(500);
+  }
+});
+app.post("/postLogs", async (req, res) => {
+  let logData = req.body;
+  res.send(logData);
+  try {
+    // Save logs in the database
+    await PostLogs(logData); //
+
+    res.status(200);
   } catch (error) {
     console.error("Error saving logs:", error);
-    res.status(500)
+    res.status(500);
   }
 });
 
 app.post("/PostIdentity", async (req, res) => {
   let identity = req.body;
-  res.send(identity)
+  res.send(identity);
   try {
     // Save Identity in the database
-    await PostIdentity(identity); // 
+    await PostIdentity(identity); //
 
-    res.status(200)
+    res.status(200);
   } catch (error) {
     console.error("Error saving logs:", error);
-    res.status(500)
+    res.status(500);
   }
 });
 
@@ -208,10 +242,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.use("/entry", entryRouter)
-app.use("/product", productRouter)
-app.use("/customer", customerRouter)
-app.use("/ui",uiRouter)
+app.use("/entry", entryRouter);
+app.use("/product", productRouter);
+app.use("/customer", customerRouter);
+app.use("/ui", uiRouter);
 
 app.get("/", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
@@ -504,7 +538,6 @@ app.get("/genProdId", verifyToken, async (req, res) => {
     }
   });
 });
-
 
 app.get("/genCustId", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {

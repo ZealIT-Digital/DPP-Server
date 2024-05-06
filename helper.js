@@ -195,6 +195,13 @@ async function templateID() {
     .findOne({ idType: "Template" });
   return productDetail;
 }
+async function userid() {
+  const userid = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .findOne({ idType: "User" });
+  return userid;
+}
 
 async function updateProdRunningNo(num) {
   let filter = { idType: "Product" };
@@ -235,23 +242,53 @@ async function PostIdentity(identity) {
     .db("DigitalProductPassport")
     .collection("ComponentMasterData")
     .insertOne(identity);
-  return PostIdentity;
+  return PostedIdentity;
 }
-async function getAllIdentity(){
+async function getAllIdentity() {
   const allIdentity = await client
-  .db('DigitalProductPassport')
-  .collection("ComponentMasterData")
-  .find()
-  .toArray();
-  return allIdentity
+    .db("DigitalProductPassport")
+    .collection("ComponentMasterData")
+    .find()
+    .toArray();
+  return allIdentity;
 }
-async function getAllLogs(){
+async function getAllHistory(userid) {
+  let filter = { id: userid };
+  const allHistory = await client
+    .db("DigitalProductPassport")
+    .collection("UserMasterData")
+    .find(filter, userid)
+    .toArray();
+  return allHistory;
+}
+async function getAllRoles() {
+  const allRoles = await client
+    .db("DigitalProductPassport")
+    .collection("RoleMasterData")
+    .find()
+    .toArray();
+  return allRoles;
+}
+async function PostHistory(History) {
+  let filter = { id: History.userId };
+  let update = {
+    $set: {
+      History: History,
+    },
+  };
+  const PostedHistory = await client
+    .db("DigitalProductPassport")
+    .collection("UserMasterData")
+    .updateOne(filter, update);
+  return PostedHistory;
+}
+async function getAllLogs() {
   const allLogs = await client
-  .db('DigitalProductPassport')
-  .collection("CustomerLogMaster")
-  .find()
-  .toArray();
-  return allLogs
+    .db("DigitalProductPassport")
+    .collection("CustomerLogMaster")
+    .find()
+    .toArray();
+  return allLogs;
 }
 async function updateCustRunningNo(num) {
   let filter = { idType: "Customer" };
@@ -295,5 +332,9 @@ export {
   getUiMasterTemplatebyCategory,
   updateUi,
   PostIdentity,
-  getAllIdentity
+  getAllIdentity,
+  getAllHistory,
+  PostHistory,
+  userid,
+  getAllRoles,
 };
