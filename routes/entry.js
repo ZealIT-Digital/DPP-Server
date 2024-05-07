@@ -1,6 +1,6 @@
 import express, { response } from "express";
 import bcrypt from "bcrypt";
-import { login, getUserData } from "../helpers/UserHelper.js";
+import { login, getUserData, updateUser } from "../helpers/UserHelper.js";
 import jwt from "jsonwebtoken";
 import { userid } from "../helper.js";
 import { createUser } from "../helper.js";
@@ -84,6 +84,7 @@ async function updateusrRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
+
 router.post("/getUserData", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let { email } = req.body;
@@ -117,5 +118,31 @@ router.post("/postUser", async (req, res) => {
   );
 
   res.send(postedUser);
+});
+
+// Update the route handler to properly handle async/await
+router.post("/updateUser", async (req, res) => {
+  try {
+    let userData = req.body;
+    let jsonData = {
+      allowed: userData.allowed,
+      name: userData.name,
+    };
+
+    // Call the updateUser function and wait for it to finish
+    await updateUser(jsonData);
+
+    // Send a success response
+    res.send({ success: true, message: "User updated successfully." });
+  } catch (error) {
+    // If an error occurs, send an error response
+    console.error("Error updating user:", error);
+    res
+      .status(500)
+      .send({
+        success: false,
+        error: "An error occurred while updating user.",
+      });
+  }
 });
 export const entryRouter = router;

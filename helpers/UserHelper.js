@@ -7,6 +7,27 @@ async function createUser(userData) {
   return postedCustomerData;
 }
 
+async function updateUser(jsonData) {
+  try {
+    let newname = jsonData.name;
+    let newallowed = jsonData.allowed;
+    let filter = { name: newname };
+    let update = {
+      $set: {
+        allowed: newallowed,
+      },
+    };
+    const updatedUser = await client
+      .db("DigitalProductPassport")
+      .collection("ComponentMasterData")
+      .updateOne(filter, update);
+    return updatedUser;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error; // Throw the error to be caught by the caller
+  }
+}
+
 async function login(email) {
   const loginUserData = await client
     .db("DigitalProductPassport")
@@ -21,4 +42,4 @@ async function getUserData(email) {
     .findOne({ email: email });
   return userData;
 }
-export { createUser, getUserData, login };
+export { createUser, getUserData, login, updateUser };
