@@ -40,7 +40,6 @@ import {
 import {
   getAllIdentity,
   PostIdentity,
-  getAllHistory,
   PostHistory,
   getAllRoles,
 } from "./helper.js";
@@ -95,17 +94,6 @@ app.get("/routVerification", verifyToken, async (req, res) => {
       res.sendStatus(403);
     } else {
       res.sendStatus(200);
-    }
-  });
-});
-
-app.get("/getAllHistory", verifyToken, async (req, res) => {
-  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const allHistory = await getAllHistory();
-      res.send(allHistory);
     }
   });
 });

@@ -252,15 +252,7 @@ async function getAllIdentity() {
     .toArray();
   return allIdentity;
 }
-async function getAllHistory(userid) {
-  let filter = { id: userid };
-  const allHistory = await client
-    .db("DigitalProductPassport")
-    .collection("UserMasterData")
-    .find(filter, userid)
-    .toArray();
-  return allHistory;
-}
+
 async function getAllRoles() {
   const allRoles = await client
     .db("DigitalProductPassport")
@@ -337,7 +329,6 @@ export {
   updateUi,
   PostIdentity,
   getAllIdentity,
-  getAllHistory,
   PostHistory,
   userid,
   getAllRoles,
