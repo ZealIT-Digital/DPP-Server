@@ -11,7 +11,7 @@ async function updateUser(jsonData) {
   try {
     let newrole = jsonData.roles;
     let newallowed = jsonData.allowed;
-    let filter = { roles: newrole };
+    let filter = { Roles: newrole };
     let update = {
       $set: {
         allowed: newallowed,

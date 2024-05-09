@@ -126,7 +126,7 @@ router.post("/updateUser", async (req, res) => {
     let userData = req.body;
     let jsonData = {
       allowed: userData.allowed,
-      roles: userData.roles,
+      roles: userData.Roles,
     };
 
     // Call the updateUser function and wait for it to finish
