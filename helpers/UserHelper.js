@@ -9,9 +9,9 @@ async function createUser(userData) {
 
 async function updateUser(jsonData) {
   try {
-    let newname = jsonData.name;
+    let newrole = jsonData.roles;
     let newallowed = jsonData.allowed;
-    let filter = { name: newname };
+    let filter = { roles: newrole };
     let update = {
       $set: {
         allowed: newallowed,
@@ -19,7 +19,7 @@ async function updateUser(jsonData) {
     };
     const updatedUser = await client
       .db("DigitalProductPassport")
-      .collection("ComponentMasterData")
+      .collection("RoleMasterData")
       .updateOne(filter, update);
     return updatedUser;
   } catch (error) {
