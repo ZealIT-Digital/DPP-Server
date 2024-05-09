@@ -126,7 +126,7 @@ router.post("/updateUser", async (req, res) => {
     let userData = req.body;
     let jsonData = {
       allowed: userData.allowed,
-      name: userData.name,
+      roles: userData.roles,
     };
 
     // Call the updateUser function and wait for it to finish
@@ -137,12 +137,10 @@ router.post("/updateUser", async (req, res) => {
   } catch (error) {
     // If an error occurs, send an error response
     console.error("Error updating user:", error);
-    res
-      .status(500)
-      .send({
-        success: false,
-        error: "An error occurred while updating user.",
-      });
+    res.status(500).send({
+      success: false,
+      error: "An error occurred while updating user.",
+    });
   }
 });
 export const entryRouter = router;
