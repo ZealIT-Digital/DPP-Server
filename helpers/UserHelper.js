@@ -1,4 +1,5 @@
 import { client } from "../index.js";
+
 async function createUser(userData) {
   const postedCustomerData = await client
     .db("DigitalProductPassport")
@@ -35,6 +36,7 @@ async function login(email) {
     .findOne({ email: email });
   return loginUserData;
 }
+
 async function getUserData(email) {
   const userData = await client
     .db("DigitalProductPassport")
@@ -42,4 +44,5 @@ async function getUserData(email) {
     .findOne({ email: email });
   return userData;
 }
+
 export { createUser, getUserData, login, updateUser };

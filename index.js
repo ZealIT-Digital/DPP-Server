@@ -88,6 +88,11 @@ function verifyToken(req, res, next) {
   }
 }
 
+app.use("/entry", entryRouter);
+app.use("/product", productRouter);
+app.use("/customer", customerRouter);
+app.use("/ui", uiRouter);
+
 app.get("/routVerification", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -229,11 +234,6 @@ app.post("/login", async (req, res) => {
     res.send("No User Found");
   }
 });
-
-app.use("/entry", entryRouter);
-app.use("/product", productRouter);
-app.use("/customer", customerRouter);
-app.use("/ui", uiRouter);
 
 app.get("/", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
