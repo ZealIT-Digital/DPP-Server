@@ -42,6 +42,7 @@ import {
   PostIdentity,
   PostHistory,
   getAllRoles,
+  getUiMasterTemplate,
 } from "./helper.js";
 
 import { addData } from "./blockChain/blockchain.js";
@@ -487,6 +488,14 @@ app.get("/getProductDetailsUI/:id", async (req, res) => {
   }
 });
 
+app.get("/getMasterTemplate/:id", async (req, res) => {
+  let { id } = req.params;
+
+  let masterTemplateData = await getUiMasterTemplate(id);
+
+  res.send(masterTemplateData);
+});
+
 app.get("/getAllUiId", async (req, res) => {
   let uiIds = await getAllUiId();
   res.send(uiIds);
@@ -659,6 +668,29 @@ app.get(`/blockChain/retrieve/:id`, async (req, res) => {
 
   res.send(bcResult);
 });
+
+// app.post(`/moveToMaster`, async (req, res) => {
+//   let id = await getAllUiId();
+
+//   id.map(async (i) => {
+//     let dd = i.templateId;
+
+//     let split = dd.split("-");
+
+//     if (split[0] == "MASTER") {
+//       let template = await getUiTemplate(dd);
+//       console.log(template);
+
+//       const uiMaster = await client
+//         .db("DigitalProductPassport")
+//         .collection("MasterTemplate")
+//         .insertOne(template);
+//       return uiMaster;
+//     }
+//   });
+
+//   res.send(id);
+// });
 
 app.listen(PORT, () =>
   console.log("The server has started in local host ", PORT)

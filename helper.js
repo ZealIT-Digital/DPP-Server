@@ -135,6 +135,15 @@ async function getUiTemplate(id) {
   return UiTemplate;
 }
 
+async function getUiMasterTemplate(id) {
+  const UiTemplate = await client
+    .db("DigitalProductPassport")
+    .collection("MasterTemplate")
+    .findOne({ templateId: id });
+
+  return UiTemplate;
+}
+
 async function getUiMasterTemplatebyCategory(category) {
   const UiTemplate = await client
     .db("DigitalProductPassport")
@@ -332,4 +341,5 @@ export {
   PostHistory,
   userid,
   getAllRoles,
+  getUiMasterTemplate,
 };
