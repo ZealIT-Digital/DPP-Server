@@ -237,39 +237,39 @@ router.get("/copyProd/:id", verifyToken, async (req, res) => {
       res.send({ message: "ID Range did not match" });
     }
   });
+});
+router.post("/postProductCategory", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let prodCatDetails = req.body;
+      console.log(prodCatDetails);
+      let prodCatID = await prodCatId();
+      let prodCatPrefix = prodCatID.prefix;
+      let prodCatRunning = prodCatID.runningNumber;
+      let prodCatIDRangeStart = prodCatID.rangeStart;
+      let prodCatIDRangeEnd = prodCatID.rangeEnd;
 
-  router.post("/postProductCategory", verifyToken, async (req, res) => {
-    jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-      if (err) {
-        res.sendStatus(403);
+      let prodCatIDInc = parseInt(prodCatRunning) + 1;
+      let prodCatIncID = prodCatPrefix + "-" + prodCatIDInc;
+
+      prodCatDetails.id = prodCatIncID;
+
+      if (
+        prodCatIDInc > prodCatIDRangeStart &&
+        prodCatIDInc < prodCatIDRangeEnd
+      ) {
+        await updateProdCatRunningNo(prodCatIDInc);
+
+        let newProdCat = await addProductCategory(prodCatDetails);
+
+        res.send(newProdCat);
       } else {
-        let prodCatDetails = req.body;
-
-        let prodCatID = await prodCatId();
-        let prodCatPrefix = prodCatID.prefix;
-        let prodCatRunning = prodCatID.runningNumber;
-        let prodCatIDRangeStart = prodCatID.rangeStart;
-        let prodCatIDRangeEnd = prodCatID.rangeEnd;
-
-        let prodCatIDInc = parseInt(prodCatRunning) + 1;
-        let prodCatIncID = prodCatPrefix + "-" + prodCatIDInc;
-
-        prodCatDetails.id = prodCatIncID;
-
-        if (
-          prodCatIDInc > prodCatIDRangeStart &&
-          prodCatIDInc < prodCatIDRangeEnd
-        ) {
-          await updateProdCatRunningNo(prodCatIDInc);
-
-          let newProdCat = await addProductCategory(prodCatDetails);
-
-          res.send(newProdCat);
-        } else {
-          res.send({ message: "ID Range did not match" });
-        }
+        res.send({ message: "ID Range did not match" });
       }
-    });
+    }
   });
 });
+
 export const productRouter = router;
