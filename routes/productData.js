@@ -290,24 +290,31 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
     }
   });
 });
-// router.post("/fileupload", verifyToken, async (req, res) => {
+// router.post("/fileUpload", verifyToken, async (req, res) => {
 //   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
 //     if (err) {
 //       res.sendStatus(403);
 //     } else {
-//       const file = req.body.file; // Assuming the file is in the request body
-//       const fileName = path.join("../public", "public", "samplefile"); // Assuming file.name contains the name of the file
-
 //       try {
-//         let data = "";
-//         file.on("data", (chunk) => {
-//           data += chunk;
+//         if (!req.files || !req.files.file) {
+//           res.status(400).send("No file uploaded");
+//           return;
+//         }
+
+//         const file = req.files.file; // Assuming the file is available via req.files.file
+//         const fileName = path.join(__dirname, "..", "public", "samplefile"); // Assuming the destination directory is '../public' and file name is 'samplefile'
+
+//         const writeStream = fs.createWriteStream(fileName);
+
+//         file.data.pipe(writeStream);
+
+//         writeStream.on("finish", () => {
+//           res.sendStatus(200);
 //         });
 
-//         file.on("end", async () => {
-//           await fsPromises.writeFile(fileName, data);
-
-//           res.sendStatus(200);
+//         writeStream.on("error", (error) => {
+//           console.error("Error saving file:", error);
+//           res.sendStatus(500);
 //         });
 //       } catch (error) {
 //         console.error("Error saving file:", error);
