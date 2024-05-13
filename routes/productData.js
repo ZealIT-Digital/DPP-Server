@@ -18,6 +18,7 @@ import {
   prodCatId,
   addProductCategory,
   updateProdCatRunningNo,
+  deleteProductCategory,
 } from "../helpers/ProductHelper.js";
 
 let router = express.Router();
@@ -238,6 +239,7 @@ router.get("/copyProd/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
 router.post("/postProductCategory", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -268,6 +270,19 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
       } else {
         res.send({ message: "ID Range did not match" });
       }
+    }
+  });
+});
+
+router.delete("/deleteProductCategory/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      console.log(id);
+      let response = deleteProductCategory(id);
+      res.send(response);
     }
   });
 });
