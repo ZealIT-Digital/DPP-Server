@@ -249,34 +249,47 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
       res.sendStatus(403);
     } else {
       let prodCatDetails = req.body;
-      console.log(prodCatDetails);
-      let prodCatID = await prodCatId();
-      let prodCatPrefix = prodCatID.prefix;
-      let prodCatRunning = prodCatID.runningNumber;
-      let prodCatIDRangeStart = prodCatID.rangeStart;
-      let prodCatIDRangeEnd = prodCatID.rangeEnd;
 
-      let prodCatIDInc = parseInt(prodCatRunning) + 1;
-      let prodCatIncID = prodCatPrefix + "-" + prodCatIDInc;
+      let allCategory = await getAllProductCategory();
+      let exist = false;
 
-      prodCatDetails.id = prodCatIncID;
+      for (let i = 0; i < allCategory.length; i++) {
+        if (allCategory[i].label == prodCatDetails.label) {
+          exist = true;
+          break;
+        }
+      }
 
-      if (
-        prodCatIDInc > prodCatIDRangeStart &&
-        prodCatIDInc < prodCatIDRangeEnd
-      ) {
-        await updateProdCatRunningNo(prodCatIDInc);
+      if (!exist) {
+        let prodCatID = await prodCatId();
+        let prodCatPrefix = prodCatID.prefix;
+        let prodCatRunning = prodCatID.runningNumber;
+        let prodCatIDRangeStart = prodCatID.rangeStart;
+        let prodCatIDRangeEnd = prodCatID.rangeEnd;
 
-        let newProdCat = await addProductCategory(prodCatDetails);
+        let prodCatIDInc = parseInt(prodCatRunning) + 1;
+        let prodCatIncID = prodCatPrefix + "-" + prodCatIDInc;
 
-        res.send(newProdCat);
+        prodCatDetails.id = prodCatIncID;
+
+        if (
+          prodCatIDInc > prodCatIDRangeStart &&
+          prodCatIDInc < prodCatIDRangeEnd
+        ) {
+          await updateProdCatRunningNo(prodCatIDInc);
+
+          let newProdCat = await addProductCategory(prodCatDetails);
+
+          res.send(newProdCat);
+        } else {
+          res.send({ message: "ID Range did not match" });
+        }
       } else {
-        res.send({ message: "ID Range did not match" });
+        res.send({ message: "Category already exists" });
       }
     }
   });
 });
-
 // router.post("/fileupload", verifyToken, async (req, res) => {
 //   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
 //     if (err) {
