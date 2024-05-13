@@ -1,5 +1,8 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import { promises as fsPromises } from "fs";
+import path from "path";
+
 import {
   getAllProducts,
   getProductsById,
@@ -273,6 +276,33 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
     }
   });
 });
+
+// router.post("/fileupload", verifyToken, async (req, res) => {
+//   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+//     if (err) {
+//       res.sendStatus(403);
+//     } else {
+//       const file = req.body.file; // Assuming the file is in the request body
+//       const fileName = path.join("../public", "public", "samplefile"); // Assuming file.name contains the name of the file
+
+//       try {
+//         let data = "";
+//         file.on("data", (chunk) => {
+//           data += chunk;
+//         });
+
+//         file.on("end", async () => {
+//           await fsPromises.writeFile(fileName, data);
+
+//           res.sendStatus(200);
+//         });
+//       } catch (error) {
+//         console.error("Error saving file:", error);
+//         res.sendStatus(500);
+//       }
+//     }
+//   });
+// });
 
 router.delete("/deleteProductCategory/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
