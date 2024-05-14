@@ -84,6 +84,25 @@ async function updateusrRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
+router.get("/getAllUsers", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allUsers = await getallUsers();
+      res.send(allUsers);
+      return allUsers;
+    }
+  });
+});
+const getallUsers = async () => {
+  const allRoles = await client
+    .db("DigitalProductPassport")
+    .collection("UserMasterData")
+    .find()
+    .toArray();
+  return allRoles;
+};
 
 router.post("/getUserData", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
