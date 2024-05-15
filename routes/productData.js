@@ -22,6 +22,7 @@ import {
   addProductCategory,
   updateProdCatRunningNo,
   deleteProductCategory,
+  deleteCategories,
 } from "../helpers/ProductHelper.js";
 
 let router = express.Router();
@@ -324,14 +325,16 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
 //   });
 // });
 
-router.delete("/deleteProductCategory/:id", verifyToken, async (req, res) => {
+router.delete("/deleteProductCategory", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      let { id } = req.params;
-      console.log(id);
-      let response = deleteProductCategory(id);
+      let data = req.body;
+      let toDelete = data.toDelete;
+
+      let response = deleteCategories(toDelete);
+
       res.send(response);
     }
   });

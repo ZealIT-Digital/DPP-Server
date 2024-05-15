@@ -91,8 +91,8 @@ async function updateTempRunningNo(num) {
 async function deleteMasterTemplate(masterTempId) {
   const deleted = client
     .db("DigitalProductPassport")
-    .collection("NumberRangeMasterData")
-    .deleteOne({ id: masterTempId });
+    .collection("MasterTemplate")
+    .deleteOne({ templateId: masterTempId });
 
   return deleted;
 }

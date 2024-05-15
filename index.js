@@ -25,6 +25,7 @@ import {
   deleteProduct,
   prodID,
   updateProdRunningNo,
+  updateProductCategory,
 } from "./helpers/ProductHelper.js";
 import {
   getUiTemplate,
@@ -36,6 +37,7 @@ import {
   updateUi,
   templateID,
   updateTempRunningNo,
+  postUiMasterTemplate,
 } from "./helpers/UiHelper.js";
 import {
   getAllIdentity,
@@ -505,14 +507,29 @@ app.post("/postProductDetailsUI/:id", async (req, res) => {
   let { id } = req.params;
   let data = req.body;
 
+  let tempID = id.split(":")[0];
+  let templateId = "MASTER" + "-" + tempID.toUpperCase();
+  let catId = data.categoryId;
+
+  delete data.categoryId;
+
   let prodData = await getProductsById(id);
 
-  let templateId = prodData.templateId;
-  data.templateId = templateId;
+  if (prodData == null) {
+    data.templateId = templateId;
+    let postedMasterTemplate = await postUiMasterTemplate(data);
 
-  let updatedUI = await updateUi(templateId, data);
+    let dta = await updateProductCategory(catId, templateId);
+    res.send(postedMasterTemplate);
+  } else {
+    console.log("second");
+    let templateId = prodData.templateId;
+    data.templateId = templateId;
 
-  res.send(updatedUI);
+    let updatedUI = await updateUi(templateId, data);
+
+    res.send(id);
+  }
 });
 
 app.get("/genProdId", verifyToken, async (req, res) => {

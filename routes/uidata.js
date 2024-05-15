@@ -11,6 +11,8 @@ import {
   deleteMasterTemplate,
   postUiMasterTemplate,
 } from "../helpers/UiHelper.js";
+
+import { updateProductCategory } from "../helpers/ProductHelper.js";
 router.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -57,11 +59,17 @@ router.post("/postUiMasterTemplate", async (req, res) => {
 
 router.delete("/deleteMasterTemplate/:id", async (req, res) => {
   let { id } = req.params;
-  console.log(id);
 
-  // let deleted = deleteMasterTemplate(id);
+  let ids = id.split(":");
 
-  res.send(id);
+  let tempId = ids[0];
+  let catId = ids[1];
+
+  let deleted = await deleteMasterTemplate(tempId);
+
+  await updateProductCategory(catId, "");
+
+  res.send(deleted);
 });
 
 export const uiRouter = router;

@@ -179,6 +179,29 @@ async function deleteProductCategory(id) {
   return deletedCustomer;
 }
 
+async function updateProductCategory(catId, tempID) {
+  let filter = { id: catId };
+  let update = {
+    $set: {
+      MastertemplateId: tempID,
+    },
+  };
+  const updatedCategory = await client
+    .db("DigitalProductPassport")
+    .collection("ProductCategoryMasterData")
+    .updateOne(filter, update);
+  return updatedCategory;
+}
+
+async function deleteCategories(ids) {
+  const deleted = await client
+    .db("DigitalProductPassport")
+    .collection("ProductCategoryMasterData")
+    .deleteMany({ id: { $in: ids } });
+
+  return deleted;
+}
+
 export {
   getAllProducts,
   getProductsById,
@@ -199,4 +222,6 @@ export {
   prodCatId,
   updateProdCatRunningNo,
   deleteProductCategory,
+  updateProductCategory,
+  deleteCategories,
 };
