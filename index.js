@@ -644,23 +644,20 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
   });
 });
 
-// Configure CORS middleware
-const corsOpts = {
-  origin: "*",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type"],
-};
-
-// Apply CORS middleware to all routes
-app.use(cors(corsOpts));
-
-// Define route handler for POST requests to /blockChain/post
 app.post(`/blockChain/post`, async (req, res) => {
   let data = req.body;
 
   let bcResult = await addData(data);
+  console.log(bcresult);
   let transactionHash = bcResult.transactionHash;
+  // data.bcTransactionHash = transactionHash;
 
+  // if (transactionHash) {
+  //   let mdbResult = await postProduct(data);
+  //   res.send(mdbResult);
+  // } else {
+  //   res.send("Error: Data not posted to Block Chain");
+  // }
   console.log(transactionHash);
   res.send(bcResult);
 });
