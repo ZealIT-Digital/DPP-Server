@@ -9,6 +9,7 @@ import {
   templateID,
   updateTempRunningNo,
   deleteMasterTemplate,
+  postUiMasterTemplate,
 } from "../helpers/UiHelper.js";
 router.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
@@ -46,6 +47,12 @@ router.get("/getUiTemplate/:id", async (req, res) => {
 router.get("/getAllUiId", async (req, res) => {
   let uiIds = await getAllUiId();
   res.send(uiIds);
+});
+
+router.post("/postUiMasterTemplate", async (req, res) => {
+  let data = req.body;
+  let postedMasterTemplate = postUiMasterTemplate(data);
+  res.send(postedMasterTemplate);
 });
 
 router.delete("/deleteMasterTemplate/:id", async (req, res) => {
