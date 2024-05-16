@@ -118,6 +118,14 @@ router.post("/postUser", async (req, res) => {
   let saltRounds = 10;
   let uid = await genUserId();
 
+  function test() {
+    if (userData.role) {
+      return userData.role;
+    } else {
+      return "user";
+    }
+  }
+
   const postedUser = bcrypt.hash(
     userPassword,
     saltRounds,
@@ -127,16 +135,18 @@ router.post("/postUser", async (req, res) => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
+        countryCode: userData.countryCode,
+        phoneNo: userData.phoneNo,
         password: hash,
-        role: "user",
+        role: test(),
         id: uid,
         History: {},
       };
+
       await createUser(hashedData);
+      res.send({ success: true, message: "User Saved successfully." });
     }
   );
-
-  res.send(postedUser);
 });
 
 // Update the route handler to properly handle async/await
