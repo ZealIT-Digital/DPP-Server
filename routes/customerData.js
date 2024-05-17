@@ -3,14 +3,13 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 import {
   getAllCustomers,
-    getCustomerById,
-    postCustomer,
-    updateCustomer,
-    deleteCustomer,
-    custID,
-    updateCustRunningNo
- }
- from "../helpers/CustomerHelper.js"
+  getCustomerById,
+  postCustomer,
+  updateCustomer,
+  deleteCustomer,
+  custID,
+  updateCustRunningNo,
+} from "../helpers/CustomerHelper.js";
 
 router.get("/getCustomer/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
@@ -64,7 +63,7 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
         if (
           allCustomers[i].id == customerData.id ||
           allCustomers[i].name == customerData.name ||
-          allCustomers[i].logoUrl == customerData.logoUrl ||
+          // allCustomers[i].logoUrl == customerData.logoUrl ||
           customerAddress == dbCustomerAddress
         ) {
           customerExist = true;

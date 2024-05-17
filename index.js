@@ -655,7 +655,11 @@ app.get("/copyCustomer/:id", verifyToken, async (req, res) => {
       await updateCustRunningNo(inc);
       let custCopy = await postCustomer(toCopy);
 
-      res.send(custCopy);
+      let toSend = {
+        custCopy: custCopy,
+        incId: incId,
+      };
+      res.send(toSend);
     } else {
       res.send({ message: "ID Range did not match" });
     }
