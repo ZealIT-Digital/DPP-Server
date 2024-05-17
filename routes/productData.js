@@ -153,6 +153,7 @@ router.post("/updateProductHeader/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let productData = req.body;
       const postedProductData = await updateProductHeader(productData);
+      console.log(postedProductData);
       res.send(postedProductData);
     }
   });
