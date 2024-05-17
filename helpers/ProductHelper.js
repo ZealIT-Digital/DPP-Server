@@ -30,6 +30,21 @@ async function getAllLogs() {
     .toArray();
   return allLogs;
 }
+async function postSerials(serialNos, id) {
+  let filter = { id: id };
+  // const options = { upsert: true };
+  let update = {
+    $push: {
+      serialNos: serialNos,
+    },
+  };
+  const updatedDetails = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .updateOne(filter, update);
+
+  return updatedDetails;
+}
 async function templateID() {
   const productDetail = await client
     .db("DigitalProductPassport")

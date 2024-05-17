@@ -240,9 +240,32 @@ router.get("/copyProd/:id", verifyToken, async (req, res) => {
 
       let prodCopy = await postProduct(toCopy);
       let postUiCopy = await postUiTemplate(uiData);
-      res.send(prodCopy);
+      let tosend = {
+        prodCopy: prodCopy,
+        prodIncId: prodIncId,
+      };
+      res.send(tosend);
     } else {
       res.send({ message: "ID Range did not match" });
+    }
+  });
+});
+
+router.post("/postSerials/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      console.log(err);
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      let serialNos = req.body.serialNos;
+
+      const pushedSerials = serialNos.map(async (serial) => {
+        await postSerials(serial, id);
+      });
+
+      console.log(pushedSerials);
+      res.send(pushedSerials);
     }
   });
 });
