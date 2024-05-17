@@ -667,7 +667,6 @@ app.post(`/blockChain/post`, async (req, res) => {
   let data = req.body;
 
   let bcResult = await addData(data);
-  console.log(bcresult);
   let transactionHash = bcResult.transactionHash;
   // data.bcTransactionHash = transactionHash;
 
