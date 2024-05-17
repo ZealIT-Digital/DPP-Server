@@ -54,6 +54,7 @@ import { entryRouter } from "./routes/entry.js";
 import { productRouter } from "./routes/productData.js";
 import { customerRouter } from "./routes/customerData.js";
 import { uiRouter } from "./routes/uidata.js";
+import { connectionRouter } from "./routes/connection.js";
 
 dotenv.config();
 const app = express();
@@ -95,6 +96,7 @@ app.use("/entry", entryRouter);
 app.use("/product", productRouter);
 app.use("/customer", customerRouter);
 app.use("/ui", uiRouter);
+app.use("/connection", connectionRouter);
 
 app.get("/routVerification", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
