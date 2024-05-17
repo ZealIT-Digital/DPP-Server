@@ -23,6 +23,7 @@ import {
   updateProdCatRunningNo,
   deleteProductCategory,
   deleteCategories,
+  postSerials,
 } from "../helpers/ProductHelper.js";
 
 import { getCustomerById } from "../helpers/CustomerHelper.js";
@@ -260,12 +261,23 @@ router.post("/postSerials/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let serialNos = req.body.serialNos;
 
-      const pushedSerials = serialNos.map(async (serial) => {
-        await postSerials(serial, id);
-      });
+      // Wrap the code in an async function
+      const processSerials = async () => {
+        const pushedSerials = await Promise.all(
+          serialNos.map(async (serial) => {
+            return await postSerials(serial, id);
+          })
+        );
 
-      console.log(pushedSerials);
-      res.send(pushedSerials);
+        console.log(pushedSerials);
+        res.send(pushedSerials);
+      };
+
+      // Call the async function
+      processSerials().catch((error) => {
+        console.error("Error processing serials:", error);
+        res.sendStatus(500);
+      });
     }
   });
 });
