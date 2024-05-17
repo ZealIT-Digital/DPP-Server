@@ -25,6 +25,8 @@ import {
   deleteCategories,
 } from "../helpers/ProductHelper.js";
 
+import { getCustomerById } from "../helpers/CustomerHelper.js";
+
 let router = express.Router();
 router.get("/getAllProducts", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
