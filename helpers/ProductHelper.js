@@ -22,14 +22,26 @@ async function getAllProductCategory() {
     .toArray();
   return categories;
 }
-async function getAllLogs() {
+// async function getAllLogs() {
+//   const allLogs = await client
+//     .db("DigitalProductPassport")
+//     .collection("CustomerLogMaster")
+//     .find()
+//     .toArray();
+//   return allLogs;
+// }
+async function getAllLogs(page = 1, limit = 5) {
+  const skips = (page - 1) * limit;
   const allLogs = await client
     .db("DigitalProductPassport")
     .collection("CustomerLogMaster")
     .find()
+    .skip(skips)
+    .limit(limit)
     .toArray();
   return allLogs;
 }
+
 async function postSerials(serialNos, id) {
   let filter = { id: id };
   // const options = { upsert: true };

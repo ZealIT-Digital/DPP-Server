@@ -15,14 +15,26 @@ async function PostLogs(logs) {
     .insertOne(logs);
   return PostLogs;
 }
-async function getAllLogs() {
+// async function getAllLogs() {
+//   const allLogs = await client
+//     .db("DigitalProductPassport")
+//     .collection("CustomerLogMaster")
+//     .find()
+//     .toArray();
+//   return allLogs;
+// }
+async function getAllLogs(page = 1, limit = 5) {
+  const skips = (page - 1) * limit;
   const allLogs = await client
     .db("DigitalProductPassport")
     .collection("CustomerLogMaster")
     .find()
+    .skip(skips)
+    .limit(limit)
     .toArray();
   return allLogs;
 }
+
 async function getUiMasterTemplatebyCategory(category) {
   const UiTemplate = await client
     .db("DigitalProductPassport")
