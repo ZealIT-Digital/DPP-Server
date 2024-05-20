@@ -251,4 +251,5 @@ export {
   deleteProductCategory,
   updateProductCategory,
   deleteCategories,
+  postSerials,
 };
