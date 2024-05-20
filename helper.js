@@ -239,13 +239,7 @@ async function updateTempRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
-async function PostLogs(logs) {
-  const PostedLogs = await client
-    .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
-    .insertOne(logs);
-  return PostLogs;
-}
+
 async function PostIdentity(identity) {
   const PostedIdentity = await client
     .db("DigitalProductPassport")
@@ -253,23 +247,27 @@ async function PostIdentity(identity) {
     .insertOne(identity);
   return PostedIdentity;
 }
-async function getAllIdentity() {
-  const allIdentity = await client
-    .db("DigitalProductPassport")
-    .collection("ComponentMasterData")
-    .find()
-    .toArray();
-  return allIdentity;
-}
 
-async function getAllRoles() {
-  const allRoles = await client
-    .db("DigitalProductPassport")
-    .collection("RoleMasterData")
-    .find()
-    .toArray();
-  return allRoles;
-}
+//! To Be Removed - Start
+// async function getAllIdentity() {
+//   const allIdentity = await client
+//     .db("DigitalProductPassport")
+//     .collection("ComponentMasterData")
+//     .find()
+//     .toArray();
+//   return allIdentity;
+// }
+
+// async function getAllRoles() {
+//   const allRoles = await client
+//     .db("DigitalProductPassport")
+//     .collection("RoleMasterData")
+//     .find()
+//     .toArray();
+//   return allRoles;
+// }
+//! To Be Removed - End
+
 async function PostHistory(History) {
   if (History.productName) {
     let filter = { email: History.userEmail };
@@ -287,14 +285,7 @@ async function PostHistory(History) {
     return "ok";
   }
 }
-async function getAllLogs() {
-  const allLogs = await client
-    .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
-    .find()
-    .toArray();
-  return allLogs;
-}
+
 async function updateCustRunningNo(num) {
   let filter = { idType: "Customer" };
   let update = {
@@ -311,8 +302,6 @@ async function updateCustRunningNo(num) {
 
 export {
   createUser,
-  PostLogs,
-  getAllLogs,
   login,
   getAllCustomers,
   getCustomerById,
@@ -337,9 +326,7 @@ export {
   getUiMasterTemplatebyCategory,
   updateUi,
   PostIdentity,
-  getAllIdentity,
   PostHistory,
   userid,
-  getAllRoles,
   getUiMasterTemplate,
 };

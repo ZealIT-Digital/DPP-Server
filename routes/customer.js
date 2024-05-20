@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 const router = express.Router();
+
 import {
   getAllCustomers,
   getCustomerById,
@@ -119,6 +120,27 @@ router.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
+router.get("/genCustId", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let idDetails = await custID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+
+    let inc = parseInt(running) + 1;
+    let id = prefix + "-" + inc;
+
+    if (inc > rangeStart && inc < rangeEnd) {
+      // updateCustRunningNo(inc);
+      res.send({ message: id });
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
+  });
+});
+
 router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let { id } = req.params;
@@ -139,17 +161,32 @@ router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     toCopy.descreption = "";
     toCopy.addressL1 = "";
     toCopy.addressL2 = "";
-
+    console.log({ incId: "incId" });
     delete toCopy._id;
     if (inc > rangeStart && inc < rangeEnd) {
       await updateCustRunningNo(inc);
       let custCopy = await postCustomer(toCopy);
 
-      res.send(custCopy);
+      let toSend = {
+        custCopy: custCopy,
+        incId: incId,
+      };
+
+      res.send(toSend);
     } else {
       res.send({ message: "ID Range did not match" });
     }
-    console.log(idDetails);
+  });
+});
+
+router.get("/getAllCustomers", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const allCustomers = await getAllCustomers();
+      res.send(allCustomers);
+    }
   });
 });
 

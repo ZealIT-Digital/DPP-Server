@@ -72,4 +72,46 @@ router.delete("/deleteMasterTemplate/:id", async (req, res) => {
   res.send(deleted);
 });
 
+router.post("/postProductDetailsUI/:id", async (req, res) => {
+  let { id } = req.params;
+  let data = req.body;
+
+  let tempID = id.split(":")[0];
+  let templateId = "MASTER" + "-" + tempID.toUpperCase();
+  let catId = data.categoryId;
+
+  delete data.categoryId;
+
+  let prodData = await getProductsById(id);
+
+  if (prodData == null) {
+    data.templateId = templateId;
+    let postedMasterTemplate = await postUiMasterTemplate(data);
+
+    let dta = await updateProductCategory(catId, templateId);
+    res.send(postedMasterTemplate);
+  } else {
+    console.log("second");
+    let templateId = prodData.templateId;
+    data.templateId = templateId;
+
+    let updatedUI = await updateUi(templateId, data);
+
+    res.send(id);
+  }
+});
+
+router.get("/getMasterTemplate/:id", async (req, res) => {
+  let { id } = req.params;
+
+  let masterTemplateData = await getUiMasterTemplate(id);
+
+  res.send(masterTemplateData);
+});
+
+router.get("/getAllUiId", async (req, res) => {
+  let uiIds = await getAllUiId();
+  res.send(uiIds);
+});
+
 export const uiRouter = router;

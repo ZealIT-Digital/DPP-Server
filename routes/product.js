@@ -26,6 +26,8 @@ import {
   postSerials,
 } from "../helpers/ProductHelper.js";
 
+import { updateUi } from "../helpers/UiHelper.js";
+
 import { getCustomerById } from "../helpers/CustomerHelper.js";
 
 let router = express.Router();
@@ -362,6 +364,27 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
 //     }
 //   });
 // });
+
+router.get("/genProdId", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let idDetails = await prodID();
+    let prefix = idDetails.prefix;
+    let running = idDetails.runningNumber;
+    let rangeStart = idDetails.rangeStart;
+    let rangeEnd = idDetails.rangeEnd;
+
+    let inc = parseInt(running) + 1;
+    let id = prefix + "-" + inc;
+
+    if (inc > rangeStart && inc < rangeEnd) {
+      updateProdRunningNo(inc);
+
+      res.send({ message: id });
+    } else {
+      res.send({ message: "ID Range did not match" });
+    }
+  });
+});
 
 router.delete("/deleteProductCategory", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
