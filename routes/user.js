@@ -9,7 +9,7 @@ import {
   login,
   getUserData,
   updateUser,
-  PostHistory,
+  postHistory,
 } from "../helpers/UserHelper.js";
 
 let router = express.Router();
@@ -182,7 +182,10 @@ router.post("/updateUser", async (req, res) => {
 router.post("/postHistory", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let history = req.body;
-    console.log(history);
+
+    let savedHistory = await postHistory(history);
+
+    console.log(savedHistory);
   });
 });
 

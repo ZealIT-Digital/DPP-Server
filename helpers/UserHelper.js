@@ -45,7 +45,7 @@ async function getUserData(email) {
   return userData;
 }
 
-async function PostHistory(History) {
+async function postHistory(History) {
   if (History.productName) {
     let filter = { email: History.userEmail };
     let update = {
@@ -59,8 +59,8 @@ async function PostHistory(History) {
       .updateOne(filter, update);
     return PostedHistory;
   } else {
-    return "ok";
+    return "error";
   }
 }
 
-export { createUser, getUserData, login, updateUser, PostHistory };
+export { createUser, getUserData, login, updateUser, postHistory };
