@@ -45,4 +45,22 @@ async function getUserData(email) {
   return userData;
 }
 
-export { createUser, getUserData, login, updateUser };
+async function PostHistory(History) {
+  if (History.productName) {
+    let filter = { email: History.userEmail };
+    let update = {
+      $addToSet: {
+        history: History,
+      },
+    };
+    const PostedHistory = await client
+      .db("DigitalProductPassport")
+      .collection("UserMasterData")
+      .updateOne(filter, update);
+    return PostedHistory;
+  } else {
+    return "ok";
+  }
+}
+
+export { createUser, getUserData, login, updateUser, PostHistory };

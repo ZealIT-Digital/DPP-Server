@@ -1,10 +1,16 @@
 import express, { response } from "express";
 import bcrypt from "bcrypt";
-import { login, getUserData, updateUser } from "../helpers/UserHelper.js";
 import jwt from "jsonwebtoken";
 import { userid } from "../helper.js";
 import { createUser } from "../helper.js";
 import { client } from "../index.js";
+
+import {
+  login,
+  getUserData,
+  updateUser,
+  PostHistory,
+} from "../helpers/UserHelper.js";
 
 let router = express.Router();
 
@@ -172,4 +178,12 @@ router.post("/updateUser", async (req, res) => {
     });
   }
 });
+
+router.post("/postHistory", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let history = req.body;
+    console.log(history);
+  });
+});
+
 export const entryRouter = router;

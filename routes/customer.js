@@ -60,7 +60,8 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
           allCustomers[i].state +
           allCustomers[i].city +
           allCustomers[i].country;
-
+        allCustomers[i].phoneNo;
+        allCustomers[i].email;
         if (
           allCustomers[i].id == customerData.id ||
           allCustomers[i].name == customerData.name ||

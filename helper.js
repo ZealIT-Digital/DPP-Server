@@ -268,24 +268,6 @@ async function PostIdentity(identity) {
 // }
 //! To Be Removed - End
 
-async function PostHistory(History) {
-  if (History.productName) {
-    let filter = { email: History.userEmail };
-    let update = {
-      $addToSet: {
-        history: History,
-      },
-    };
-    const PostedHistory = await client
-      .db("DigitalProductPassport")
-      .collection("UserMasterData")
-      .updateOne(filter, update);
-    return PostedHistory;
-  } else {
-    return "ok";
-  }
-}
-
 async function updateCustRunningNo(num) {
   let filter = { idType: "Customer" };
   let update = {
@@ -326,7 +308,6 @@ export {
   getUiMasterTemplatebyCategory,
   updateUi,
   PostIdentity,
-  PostHistory,
   userid,
   getUiMasterTemplate,
 };
