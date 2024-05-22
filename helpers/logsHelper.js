@@ -23,18 +23,54 @@ import { client } from "../index.js";
 
 //   return allLogs;
 // }
-async function getAllLogs(page = 1, limit = 5) {
+// async function getAllLogs(page = 1, limit = 5) {
+//   const skips = (page - 1) * limit;
+//   const allLogs = await client
+//     .db("DigitalProductPassport")
+//     .collection("CustomerLogMaster")
+//     .find()
+//     .sort({ date: -1, time: -1 }) // Sort by date and time in descending order
+//     .skip(skips)
+//     .limit(limit)
+//     .toArray();
+
+//   return allLogs;
+// }
+
+async function getAllLogs(page, limit, type, action) {
   const skips = (page - 1) * limit;
-  const allLogs = await client
+  let query = {};
+
+  // If type is provided, include it in the query
+  if (type) {
+    query.type = type;
+  }
+
+  // If action is provided, include it in the query
+  if (action) {
+    query.action = action;
+  }
+
+  let logs = await client
     .db("DigitalProductPassport")
     .collection("CustomerLogMaster")
-    .find()
-    .sort({ date: -1, time: -1 }) // Sort by date and time in descending order
+    .find(query) // Apply the query to filter logs based on type and action
+    .sort({ date: -1, time: -1 })
     .skip(skips)
     .limit(limit)
     .toArray();
 
-  return allLogs;
+  // No need for additional filtering here
+
+  // Pagination logic
+  const totalLogs = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerLogMaster")
+    .countDocuments(query); // Count total number of logs that match the query
+
+  const hasMoreLogs = totalLogs > skips + logs.length; // Check if there are more logs available
+
+  return { logs, hasMoreLogs };
 }
 
 // async function GetLogs(startDate, endDate) {

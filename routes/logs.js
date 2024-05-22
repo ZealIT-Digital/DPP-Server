@@ -23,8 +23,16 @@ router.get("/getAllLogs", verifyToken, async (req, res) => {
     } else {
       const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
-      const allLogs = await getAllLogs(page, limit);
-      res.send(allLogs);
+      const type = req.query.type || ""; // Extract type query parameter
+      const action = req.query.action || ""; // Extract action query parameter
+
+      try {
+        const allLogs = await getAllLogs(page, limit, type, action); // Pass type and action to getAllLogs
+        res.send(allLogs);
+      } catch (error) {
+        console.error("Error fetching logs:", error);
+        res.sendStatus(500);
+      }
     }
   });
 });
