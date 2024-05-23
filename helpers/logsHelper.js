@@ -37,7 +37,7 @@ import { client } from "../index.js";
 //   return allLogs;
 // }
 
-async function getAllLogs(page, limit, type, action) {
+async function getAllLogs(page, limit, type, action, date, time) {
   const skips = (page - 1) * limit;
   let query = {};
 
@@ -50,12 +50,12 @@ async function getAllLogs(page, limit, type, action) {
   if (action) {
     query.action = action;
   }
-
+  console.log({ date: date, time: time });
   let logs = await client
     .db("DigitalProductPassport")
     .collection("CustomerLogMaster")
     .find(query) // Apply the query to filter logs based on type and action
-    .sort({ date: -1, time: -1 })
+    .sort({ date: date, time: time })
     .skip(skips)
     .limit(limit)
     .toArray();
@@ -162,7 +162,6 @@ async function GetLogs(startDate, endDate, type, action) {
     // Format dates to ensure they are strings in 'YYYY-MM-DD' format
     const start = startDate;
     const end = endDate;
-    console.log(action);
 
     // Construct the query object
     const query = {
