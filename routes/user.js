@@ -52,7 +52,9 @@ router.post("/login", async (req, res) => {
         passwordStatus: result,
         role: loginData.role,
         token: signature,
+        dp: loginData.dp,
       };
+      console.log(accumulatedData);
       res.send(accumulatedData);
     });
   } else {
