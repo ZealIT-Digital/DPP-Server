@@ -52,6 +52,14 @@ async function postUiMasterTemplate(data) {
   return UiTemplate;
 }
 
+async function getUiMasterTemplate(id) {
+  const UiTemplate = await client
+    .db("DigitalProductPassport")
+    .collection("MasterTemplate")
+    .findOne({ templateId: id });
+
+  return UiTemplate;
+}
 async function updateUi(tempId, data) {
   const postedUIData = await client
     .db("DigitalProductPassport")
@@ -101,4 +109,5 @@ export {
   updateTempRunningNo,
   deleteMasterTemplate,
   postUiMasterTemplate,
+  getUiMasterTemplate,
 };
