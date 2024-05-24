@@ -12,6 +12,7 @@ import {
   postUiMasterTemplate,
   getUiMasterTemplate,
 } from "../helpers/UiHelper.js";
+import { getProductsById } from "../helpers/ProductHelper.js";
 
 import { updateProductCategory } from "../helpers/ProductHelper.js";
 router.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
@@ -29,6 +30,7 @@ router.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
 // Middleware function to verify JWT
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers["authorization"];
@@ -41,6 +43,17 @@ function verifyToken(req, res, next) {
     res.sendStatus(403);
   }
 }
+router.get("/getProductDetailsUI/:id", async (req, res) => {
+  let { id } = req.params;
+
+  let prodData = await getProductsById(id);
+
+  if (prodData.templateId) {
+    let tempId = prodData.templateId;
+    let templateData = await getUiTemplate(tempId);
+    res.send(templateData);
+  }
+});
 router.get("/getUiTemplate/:id", async (req, res) => {
   let { id } = req.params;
   const UiTemplate = await getUiTemplate(id);
