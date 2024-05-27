@@ -4,6 +4,7 @@ async function getAllProducts() {
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .find()
+    .limit(50)
     .toArray();
   return allProductData;
 }
