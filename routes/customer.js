@@ -221,8 +221,8 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
     } else {
       const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
-
-      const allCustomers = await getAllCustomers(page, limit);
+      const sort = req.query.sort;
+      const allCustomers = await getAllCustomers(page, limit, sort);
       res.send(allCustomers);
     }
   });

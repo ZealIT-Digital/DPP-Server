@@ -1,11 +1,12 @@
 import { client } from "../index.js";
 
-async function getAllCustomers() {
+async function getAllCustomers(sort) {
   const allCustomerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .find()
     .limit(50)
+    .sort({ id: sort })
     .toArray();
   return allCustomerData;
 }
