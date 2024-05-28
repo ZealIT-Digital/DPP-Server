@@ -219,7 +219,10 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      const allCustomers = await getAllCustomers();
+      const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+      const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
+
+      const allCustomers = await getAllCustomers(page, limit);
       res.send(allCustomers);
     }
   });
