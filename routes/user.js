@@ -120,26 +120,71 @@ router.post("/getUserData", verifyToken, async (req, res) => {
     res.send(userData);
   });
 });
+// router.post("/postUser", async (req, res) => {
+//   let userData = req.body;
+//   let userPassword = userData.password;
+//   let saltRounds = 10;
+//   let uid = await genUserId();
+
+//   function test() {
+//     if (userData.role) {
+//       return userData.role;
+//     } else {
+//       return "user";
+//     }
+//   }
+
+//   const postedUser = bcrypt.hash(
+//     userPassword,
+//     saltRounds,
+
+//     async function (err, hash) {
+//       let hashedData = {
+//         firstName: userData.firstName,
+//         lastName: userData.lastName,
+//         email: userData.email,
+//         countryCode: userData.countryCode,
+//         phoneNo: userData.phoneNo,
+//         password: hash,
+//         role: test(),
+//         id: uid,
+//         History: {},
+//       };
+
+//       await createUser(hashedData);
+//       res.send({ success: true, message: "User Saved successfully." });
+//     }
+//   );
+// });
+
 router.post("/postUser", async (req, res) => {
-  let userData = req.body;
-  let userPassword = userData.password;
-  let saltRounds = 10;
-  let uid = await genUserId();
+  try {
+    const userData = req.body;
+    const userPassword = userData.password;
+    const saltRounds = 10;
+    const uid = await genUserId();
 
-  function test() {
-    if (userData.role) {
-      return userData.role;
-    } else {
-      return "user";
+    function test() {
+      return userData.role || "user";
     }
-  }
 
-  const postedUser = bcrypt.hash(
-    userPassword,
-    saltRounds,
+    // Check if the email already exists in the database
+    const existingUser = await getUserData(userData.email);
+    if (existingUser) {
+      console.log("exits");
+      return res
+        .status(408)
+        .send({ success: false, message: "Email already registered." });
+    }
 
-    async function (err, hash) {
-      let hashedData = {
+    bcrypt.hash(userPassword, saltRounds, async (err, hash) => {
+      if (err) {
+        return res
+          .status(500)
+          .send({ success: false, message: "Error hashing password." });
+      }
+
+      const hashedData = {
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
@@ -151,10 +196,16 @@ router.post("/postUser", async (req, res) => {
         History: {},
       };
 
+      // Save the user data to the database
       await createUser(hashedData);
-      res.send({ success: true, message: "User Saved successfully." });
-    }
-  );
+      res.status(200);
+      res.send({ success: true, message: "User saved successfully." });
+      // console.log("success");
+    });
+  } catch (error) {
+    console.error("User with this email Already Exists!:", error);
+    console.log("failed");
+  }
 });
 
 // Update the route handler to properly handle async/await
