@@ -10,6 +10,7 @@ import {
   deleteCustomer,
   custID,
   updateCustRunningNo,
+  checkcustomer,
 } from "../helpers/CustomerHelper.js";
 
 router.get("/getCustomer/:id", verifyToken, async (req, res) => {
@@ -36,62 +37,95 @@ function verifyToken(req, res, next) {
   }
 }
 
+// router.post("/postCustomer", verifyToken, async (req, res) => {
+//   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+//     if (err) {
+//       res.sendStatus(403);
+//     } else {
+//       let customerData = req.body;
+//       const allCustomers = await getAllCustomers();
+
+//       let customerExist = false;
+
+//       let dbCustomerAddress =
+//         customerData.addressL1 +
+//         customerData.addressL2 +
+//         customerData.state +
+//         customerData.city +
+//         customerData.country;
+
+//       for (let i = 0; i < allCustomers.length; i++) {
+//         let customerAddress =
+//           allCustomers[i].addressL1 +
+//           allCustomers[i].addressL2 +
+//           allCustomers[i].state +
+//           allCustomers[i].city +
+//           allCustomers[i].country;
+//         allCustomers[i].phoneNo;
+//         allCustomers[i].email;
+//         if (
+//           allCustomers[i].id == customerData.id ||
+//           allCustomers[i].name == customerData.name ||
+//           // allCustomers[i].logoUrl == customerData.logoUrl ||
+//           customerAddress == dbCustomerAddress
+//         ) {
+//           customerExist = true;
+//           console.log(allCustomers[i]);
+//           break;
+//         } else {
+//           null;
+//         }
+//       }
+
+//       if (customerExist == false) {
+//         const postedCustomer = await postCustomer(customerData);
+
+//         let idDetails = await custID();
+//         let running = idDetails.runningNumber;
+//         let rangeStart = idDetails.rangeStart;
+//         let rangeEnd = idDetails.rangeEnd;
+
+//         let inc = parseInt(running) + 1;
+
+//         if (inc > rangeStart && inc < rangeEnd) {
+//           updateCustRunningNo(inc);
+//         }
+//         res.send(postedCustomer);
+//       } else {
+//         res.send({ message: "This Customer Data Already Exist" });
+//       }
+//     }
+//   });
+// });
 router.post("/postCustomer", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      let customerData = req.body;
-      const allCustomers = await getAllCustomers();
+      const customerData = req.body;
+      const existingCustomer = await checkcustomer(customerData.email);
 
-      let customerExist = false;
-
-      let dbCustomerAddress =
-        customerData.addressL1 +
-        customerData.addressL2 +
-        customerData.state +
-        customerData.city +
-        customerData.country;
-
-      for (let i = 0; i < allCustomers.length; i++) {
-        let customerAddress =
-          allCustomers[i].addressL1 +
-          allCustomers[i].addressL2 +
-          allCustomers[i].state +
-          allCustomers[i].city +
-          allCustomers[i].country;
-        allCustomers[i].phoneNo;
-        allCustomers[i].email;
-        if (
-          allCustomers[i].id == customerData.id ||
-          allCustomers[i].name == customerData.name ||
-          // allCustomers[i].logoUrl == customerData.logoUrl ||
-          customerAddress == dbCustomerAddress
-        ) {
-          customerExist = true;
-          console.log(allCustomers[i]);
-          break;
-        } else {
-          null;
-        }
-      }
-
-      if (customerExist == false) {
+      if (existingCustomer) {
+        // User already exists
+        console.log("exists");
+        res
+          .status(301)
+          .send({ message: "User with this email already exists." });
+      } else {
+        // Proceed with customer registration
         const postedCustomer = await postCustomer(customerData);
 
-        let idDetails = await custID();
-        let running = idDetails.runningNumber;
-        let rangeStart = idDetails.rangeStart;
-        let rangeEnd = idDetails.rangeEnd;
+        const idDetails = await custID();
+        const running = parseInt(idDetails.runningNumber) + 1;
+        const { rangeStart, rangeEnd } = idDetails;
 
-        let inc = parseInt(running) + 1;
-
-        if (inc > rangeStart && inc < rangeEnd) {
-          updateCustRunningNo(inc);
+        if (running > rangeStart && running < rangeEnd) {
+          updateCustRunningNo(running);
         }
-        res.send(postedCustomer);
-      } else {
-        res.send({ message: "This Customer Data Already Exist" });
+
+        // User registered successfully
+        console.log("success");
+        res.status(200).send({ message: "User registered successfully." });
       }
     }
   });

@@ -57,6 +57,13 @@ async function custID() {
     .findOne({ idType: "Customer" });
   return productDetail;
 }
+async function checkcustomer(email) {
+  const userData = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .findOne({ email: email });
+  return userData;
+}
 async function updateCustRunningNo(num) {
   let filter = { idType: "Customer" };
   let update = {
@@ -64,6 +71,7 @@ async function updateCustRunningNo(num) {
       runningNumber: num,
     },
   };
+
   const updatedDetails = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
@@ -79,4 +87,5 @@ export {
   deleteCustomer,
   custID,
   updateCustRunningNo,
+  checkcustomer,
 };
