@@ -8,7 +8,7 @@ async function getAllCustomers(page, limit, skip, sort) {
     .collection("CustomerMasterData")
     .find()
     .skip(parseInt(skip))
-    .limit(1)
+    .limit(limit)
     .sort({ id: sort })
     .toArray();
   console.log(allCustomerData);
