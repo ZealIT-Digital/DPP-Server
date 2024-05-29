@@ -1,13 +1,17 @@
 import { client } from "../index.js";
 
-async function getAllCustomers(sort) {
+async function getAllCustomers(page, limit, skip, sort) {
+  // const skips = (page + 1) * limit;
+  console.log({ page: page, limit: limit, skip: skip });
   const allCustomerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .find()
-    .limit(50)
+    .skip(parseInt(skip))
+    .limit(1)
     .sort({ id: sort })
     .toArray();
+  console.log(allCustomerData);
   return allCustomerData;
 }
 

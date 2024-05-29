@@ -107,7 +107,7 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
 
       if (existingCustomer) {
         // User already exists
-        console.log("User with this email already exists");
+        console.log("exists");
         res
           .status(301)
           .send({ message: "User with this email already exists." });
@@ -221,8 +221,9 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
     } else {
       const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
+      const skip = parseInt(req.query.skip) || 20;
       const sort = req.query.sort;
-      const allCustomers = await getAllCustomers(page, limit, sort);
+      const allCustomers = await getAllCustomers(page, limit, skip, sort);
       res.send(allCustomers);
     }
   });
