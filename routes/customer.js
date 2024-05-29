@@ -107,7 +107,7 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
 
       if (existingCustomer) {
         // User already exists
-        console.log("exists");
+        console.log("User with this email already exists");
         res
           .status(301)
           .send({ message: "User with this email already exists." });
