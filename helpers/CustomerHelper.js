@@ -83,6 +83,25 @@ async function updateCustRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
+
+async function getCustomerCount() {
+  const count = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .countDocuments();
+
+  return count;
+}
+
+async function deleteAllCustomer() {
+  const delet = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .deleteMany();
+
+  return delet;
+}
+
 export {
   getAllLogs,
   getAllCustomers,
@@ -93,4 +112,6 @@ export {
   custID,
   updateCustRunningNo,
   checkcustomer,
+  getCustomerCount,
+  deleteAllCustomer,
 };

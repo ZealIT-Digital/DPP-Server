@@ -11,6 +11,8 @@ import {
   custID,
   updateCustRunningNo,
   checkcustomer,
+  getCustomerCount,
+  deleteAllCustomer,
 } from "../helpers/CustomerHelper.js";
 
 router.get("/getCustomer/:id", verifyToken, async (req, res) => {
@@ -24,6 +26,19 @@ router.get("/getCustomer/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
+router.get("/getCustomerCount", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const result = await getCustomerCount();
+      console.log(result);
+      res.send({ count: result });
+    }
+  });
+});
+
 // Middleware function to verify JWT
 function verifyToken(req, res, next) {
   const bearerHeader = req.headers["authorization"];
@@ -37,66 +52,6 @@ function verifyToken(req, res, next) {
   }
 }
 
-// router.post("/postCustomer", verifyToken, async (req, res) => {
-//   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-//     if (err) {
-//       res.sendStatus(403);
-//     } else {
-//       let customerData = req.body;
-//       const allCustomers = await getAllCustomers();
-
-//       let customerExist = false;
-
-//       let dbCustomerAddress =
-//         customerData.addressL1 +
-//         customerData.addressL2 +
-//         customerData.state +
-//         customerData.city +
-//         customerData.country;
-
-//       for (let i = 0; i < allCustomers.length; i++) {
-//         let customerAddress =
-//           allCustomers[i].addressL1 +
-//           allCustomers[i].addressL2 +
-//           allCustomers[i].state +
-//           allCustomers[i].city +
-//           allCustomers[i].country;
-//         allCustomers[i].phoneNo;
-//         allCustomers[i].email;
-//         if (
-//           allCustomers[i].id == customerData.id ||
-//           allCustomers[i].name == customerData.name ||
-//           // allCustomers[i].logoUrl == customerData.logoUrl ||
-//           customerAddress == dbCustomerAddress
-//         ) {
-//           customerExist = true;
-//           console.log(allCustomers[i]);
-//           break;
-//         } else {
-//           null;
-//         }
-//       }
-
-//       if (customerExist == false) {
-//         const postedCustomer = await postCustomer(customerData);
-
-//         let idDetails = await custID();
-//         let running = idDetails.runningNumber;
-//         let rangeStart = idDetails.rangeStart;
-//         let rangeEnd = idDetails.rangeEnd;
-
-//         let inc = parseInt(running) + 1;
-
-//         if (inc > rangeStart && inc < rangeEnd) {
-//           updateCustRunningNo(inc);
-//         }
-//         res.send(postedCustomer);
-//       } else {
-//         res.send({ message: "This Customer Data Already Exist" });
-//       }
-//     }
-//   });
-// });
 router.post("/postCustomer", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -225,6 +180,17 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
       const sort = req.query.sort;
       const allCustomers = await getAllCustomers(page, limit, skip, sort);
       res.send(allCustomers);
+    }
+  });
+});
+
+router.delete("/d-a-c", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const delet = await deleteAllCustomer();
+      res.send(delet);
     }
   });
 });

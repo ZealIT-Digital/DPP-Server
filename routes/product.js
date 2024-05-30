@@ -24,6 +24,7 @@ import {
   deleteProductCategory,
   deleteCategories,
   postSerials,
+  deleteAllProduct,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -397,6 +398,17 @@ router.delete("/deleteProductCategory", verifyToken, async (req, res) => {
       let response = deleteCategories(toDelete);
 
       res.send(response);
+    }
+  });
+});
+
+router.delete("/d-a-p", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const delet = await deleteAllProduct();
+      res.send(delet);
     }
   });
 });

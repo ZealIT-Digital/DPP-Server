@@ -230,6 +230,15 @@ async function deleteCategories(ids) {
   return deleted;
 }
 
+async function deleteAllProduct() {
+  const delet = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .deleteMany();
+
+  return delet;
+}
+
 export {
   getAllProducts,
   getProductsById,
@@ -253,4 +262,5 @@ export {
   updateProductCategory,
   deleteCategories,
   postSerials,
+  deleteAllProduct,
 };
