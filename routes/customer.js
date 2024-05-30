@@ -66,6 +66,7 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
         res
           .status(301)
           .send({ message: "User with this email already exists." });
+        console.log("User with this email already exists.");
       } else {
         // Proceed with customer registration
         const postedCustomer = await postCustomer(customerData);
@@ -81,6 +82,7 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
         // User registered successfully
         console.log("success");
         res.status(200).send({ message: "User registered successfully." });
+        console.log("User registered successfully.");
       }
     }
   });
