@@ -25,6 +25,7 @@ import {
   deleteCategories,
   postSerials,
   deleteAllProduct,
+  getProductCount,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -37,7 +38,12 @@ router.get("/getAllProducts", verifyToken, async (req, res) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      const allProducts = await getAllProducts();
+      console.log({ datas: req.query });
+      const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+      const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
+      const skip = parseInt(req.query.skip) || 20;
+      const sort = req.query.sort;
+      const allProducts = await getAllProducts(limit, skip, sort);
       res.send(allProducts);
     }
   });
@@ -117,7 +123,7 @@ router.post("/postProduct", verifyToken, async (req, res) => {
       let prodData = req.body;
       let prodCat = prodData.category;
       let uiData = await getUiMasterTemplatebyCategory(prodCat);
-      delete uiData._id;
+      delete uiData?._id;
 
       let idDetails = await templateID();
       let prefix = idDetails.prefix;
@@ -128,10 +134,12 @@ router.post("/postProduct", verifyToken, async (req, res) => {
       let inc = parseInt(running) + 1;
       let tempId = prefix + "-" + inc;
 
-      delete uiData.templateCategory;
+      delete uiData?.templateCategory;
 
-      uiData.templateId = tempId;
-      prodData.templateId = tempId;
+      if (uiData) {
+        uiData.templateId = tempId;
+        prodData.templateId = tempId;
+      }
 
       if (inc > rangeStart && inc < rangeEnd) {
         const postedTemplate = await postUiTemplate(uiData);
@@ -224,8 +232,8 @@ router.get("/copyProd/:id", verifyToken, async (req, res) => {
     let templateInc = parseInt(templateRunning) + 1;
     let templateIncId = templatePrefix + "-" + templateInc;
 
-    delete uiData._id;
-    delete toCopy._id;
+    delete uiData?._id;
+    delete toCopy?._id;
     delete uiData.templateCategory;
 
     toCopy.id = prodIncId;
@@ -332,39 +340,18 @@ router.post("/postProductCategory", verifyToken, async (req, res) => {
     }
   });
 });
-// router.post("/fileUpload", verifyToken, async (req, res) => {
-//   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-//     if (err) {
-//       res.sendStatus(403);
-//     } else {
-//       try {
-//         if (!req.files || !req.files.file) {
-//           res.status(400).send("No file uploaded");
-//           return;
-//         }
 
-//         const file = req.files.file; // Assuming the file is available via req.files.file
-//         const fileName = path.join(__dirname, "..", "public", "samplefile"); // Assuming the destination directory is '../public' and file name is 'samplefile'
-
-//         const writeStream = fs.createWriteStream(fileName);
-
-//         file.data.pipe(writeStream);
-
-//         writeStream.on("finish", () => {
-//           res.sendStatus(200);
-//         });
-
-//         writeStream.on("error", (error) => {
-//           console.error("Error saving file:", error);
-//           res.sendStatus(500);
-//         });
-//       } catch (error) {
-//         console.error("Error saving file:", error);
-//         res.sendStatus(500);
-//       }
-//     }
-//   });
-// });
+router.get("/getProductCount", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const result = await getProductCount();
+      console.log(result);
+      res.send({ count: result });
+    }
+  });
+});
 
 router.get("/genProdId", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {

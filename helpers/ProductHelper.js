@@ -1,13 +1,17 @@
 import { client } from "../index.js";
-async function getAllProducts() {
+
+async function getAllProducts(page, limit, skip, sort) {
   const allProductData = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .find()
-    .limit(50)
+    .skip(parseInt(skip))
+    .limit(limit)
+    .sort({ id: sort })
     .toArray();
   return allProductData;
 }
+
 async function postUiTemplate(data) {
   const UiTemplate = await client
     .db("DigitalProductPassport")
@@ -230,6 +234,15 @@ async function deleteCategories(ids) {
   return deleted;
 }
 
+async function getProductCount() {
+  const count = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .countDocuments();
+
+  return count;
+}
+
 async function deleteAllProduct() {
   const delet = await client
     .db("DigitalProductPassport")
@@ -263,4 +276,5 @@ export {
   deleteCategories,
   postSerials,
   deleteAllProduct,
+  getProductCount,
 };
