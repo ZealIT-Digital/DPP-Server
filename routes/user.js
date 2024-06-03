@@ -29,8 +29,8 @@ function verifyToken(req, res, next) {
 
 router.post("/login", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "https://devdpp.vercel.app");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // Adjust as needed
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // Adjust as needed
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   let data = req.body;
 
