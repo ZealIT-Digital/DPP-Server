@@ -23,7 +23,11 @@ import { blockchainRouter } from "./routes/blockchain.js";
 dotenv.config();
 const app = express();
 
-const allowedOrigins = ["https://devdpp.vercel.app", "http://localhost:3000"];
+const allowedOrigins = [
+  "https://devdpp.vercel.app",
+  "http://localhost:3000",
+  "https://dpp-client-dev.vercel.app",
+];
 
 app.use(
   cors({
