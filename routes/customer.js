@@ -86,44 +86,6 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
   });
 });
 
-// router.post("/postCustomer", verifyToken, async (req, res) => {
-//   try {
-//     const decoded = await jwt.verify(req.token, "DPP-Shh");
-//     const customerData = req.body;
-
-//     const existingCustomer = await checkcustomer(customerData.email);
-
-//     if (existingCustomer) {
-//       // User already exists
-//       console.log("exists");
-//       return res
-//         .status(301)
-//         .json({ message: "User with this email already exists." });
-//     }
-
-//     // Proceed with customer registration
-//     const postedCustomer = await postCustomer(customerData);
-
-//     const idDetails = await custID();
-//     const running = parseInt(idDetails.runningNumber) + 1;
-//     const { rangeStart, rangeEnd } = idDetails;
-
-//     if (running >= rangeStart && running <= rangeEnd) {
-//       await updateCustRunningNo(running);
-//     }
-
-//     // User registered successfully
-//     console.log("success");
-//     res.status(200).json({ message: "User registered successfully." });
-//   } catch (err) {
-//     console.error(err);
-//     if (err.name === "JsonWebTokenError") {
-//       return res.sendStatus(403); // Forbidden
-//     }
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// });
-
 router.post("/updateCustomer/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -211,7 +173,7 @@ router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
 router.get("/getAllCustomers", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.status(403).send(err);
     } else {
       const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided

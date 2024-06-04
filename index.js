@@ -106,7 +106,7 @@ app.use("/blockchain", blockchainRouter);
 app.get("/routVerification", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.status(403).send(err);
     } else {
       res.sendStatus(200);
     }
