@@ -95,8 +95,8 @@ router.post("/updateCustomer/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let customerData = req.body;
 
-      const postedProductData = await updateCustomer(id, customerData);
-      res.send(postedProductData);
+      const postedCustomerData = await updateCustomer(id, customerData);
+      res.send(postedCustomerData);
     }
   });
 });
