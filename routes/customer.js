@@ -6,6 +6,7 @@ import {
   getAllCustomers,
   getCustomerById,
   postCustomer,
+  getCustomerByname,
   updateCustomer,
   deleteCustomer,
   custID,
@@ -15,7 +16,7 @@ import {
   deleteAllCustomer,
 } from "../helpers/CustomerHelper.js";
 
-router.get("/getCustomer/:id", verifyToken, async (req, res) => {
+router.get("/getCustomerById/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -26,6 +27,21 @@ router.get("/getCustomer/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
+router.get("/getCustomerByName/:name", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+   const {name}=req.params
+console.log(name)
+   if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      const result = await getCustomerByname(name);
+      res.send(result);
+    }
+  });
+});
+
 
 router.get("/getCustomerCount", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {

@@ -31,8 +31,18 @@ async function getCustomerById(id) {
     .findOne({ id: id }, function (err, result) {
       if (err) throw err;
     });
-  return customerData;
+  return customerData; 
 }
+
+async function getCustomerByname(name) {
+  const customerData = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .findOne({ name: name }, function (err, result) {
+      if (err) throw err;
+    });
+  return customerData;
+  }
 
 async function postCustomer(customerData) {
   const postedCustomerData = await client
@@ -58,7 +68,7 @@ async function deleteCustomer(id) {
 async function custID() {
   const productDetail = await client
     .db("DigitalProductPassport")
-    .collection("NumberRangeMasterData")
+    .collection("NumberRangeMasterData") 
     .findOne({ idType: "Customer" });
   return productDetail;
 }
@@ -105,6 +115,7 @@ async function deleteAllCustomer() {
 export {
   getAllLogs,
   getAllCustomers,
+  getCustomerByname,
   getCustomerById,
   postCustomer,
   updateCustomer,

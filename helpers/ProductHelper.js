@@ -70,12 +70,29 @@ async function templateID() {
   return productDetail;
 }
 async function getProductsById(id) {
-  let productData = await client
+  const productData = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
-    .findOne({ id: id });
+    .findOne({ id: id }, function (err, result) {
+      if (err) throw err;
+    });
   return productData;
 }
+
+async function getProductByname(name) {
+    try {
+        const productData = await client
+            .db("DigitalProductPassport")
+            .collection("ProductMasterData")
+            .find({ name: new RegExp(`^${name}$`, 'i') })
+            .toArray();
+        return productData;
+    } catch (err) {
+        throw new Error('Error fetching products by name: ' + err.message);
+    }
+}
+
+
 async function postProduct(productData) {
   const postedProductData = await client
     .db("DigitalProductPassport")
@@ -255,6 +272,7 @@ async function deleteAllProduct() {
 export {
   getAllProducts,
   getProductsById,
+  getProductByname,
   postProduct,
   updateProductHeader,
   getAllLogs,
