@@ -91,6 +91,15 @@ router.get("/getProducts/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
+router.get("/getProduct/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    let { id } = req.params;
+    let result = await getProductsById(id);
+    res.send(result);
+  });
+});
+
 router.get("/productUiTemplate/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -121,7 +130,7 @@ router.get("/getProductById/:id", verifyToken, async (req, res) => {
 
 router.get("/getProductByName/:name", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-    const {name}=req.params;
+    const { name } = req.params;
     if (err) {
       res.sendStatus(403);
     } else {
