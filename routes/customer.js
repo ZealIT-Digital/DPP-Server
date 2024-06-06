@@ -30,9 +30,9 @@ router.get("/getCustomerById/:id", verifyToken, async (req, res) => {
 
 router.get("/getCustomerByName/:name", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-   const {name}=req.params
-console.log(name)
-   if (err) {
+    const { name } = req.params;
+    console.log(name);
+    if (err) {
       res.sendStatus(403);
     } else {
       let { id } = req.params;
@@ -41,7 +41,6 @@ console.log(name)
     }
   });
 });
-
 
 router.get("/getCustomerCount", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
@@ -127,7 +126,17 @@ router.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
     }
   });
 });
-
+router.get("/getCustomer/:id", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      const result = await getCustomerById(id);
+      res.send(result);
+    }
+  });
+});
 router.get("/genCustId", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let idDetails = await custID();
