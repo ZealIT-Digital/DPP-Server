@@ -49,12 +49,6 @@ async function getAllLogs(page = 1, limit = 5) {
 
 async function postSerials(id, data) {
   let filter = { id: id };
-  // const options = { upsert: true };
-  // let dta = {
-  //   serialNos: serialNos,
-  //   Hash: Hash,
-  //   time: time,
-  // };
   let update = {
     $push: { serialNos: data },
   };
