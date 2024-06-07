@@ -47,13 +47,16 @@ async function getAllLogs(page = 1, limit = 5) {
   return allLogs;
 }
 
-async function postSerials(serialNos, id) {
+async function postSerials(id, data) {
   let filter = { id: id };
   // const options = { upsert: true };
+  // let dta = {
+  //   serialNos: serialNos,
+  //   Hash: Hash,
+  //   time: time,
+  // };
   let update = {
-    $push: {
-      serialNos: serialNos,
-    },
+    $push: { serialNos: data },
   };
   const updatedDetails = await client
     .db("DigitalProductPassport")
@@ -80,18 +83,17 @@ async function getProductsById(id) {
 }
 
 async function getProductByname(name) {
-    try {
-        const productData = await client
-            .db("DigitalProductPassport")
-            .collection("ProductMasterData")
-            .find({ name: new RegExp(`^${name}$`, 'i') })
-            .toArray();
-        return productData;
-    } catch (err) {
-        throw new Error('Error fetching products by name: ' + err.message);
-    }
+  try {
+    const productData = await client
+      .db("DigitalProductPassport")
+      .collection("ProductMasterData")
+      .find({ name: new RegExp(`^${name}$`, "i") })
+      .toArray();
+    return productData;
+  } catch (err) {
+    throw new Error("Error fetching products by name: " + err.message);
+  }
 }
-
 
 async function postProduct(productData) {
   const postedProductData = await client
