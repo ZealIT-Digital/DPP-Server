@@ -1,5 +1,5 @@
 import { client } from "../index.js";
-
+ 
 async function getAllCustomers(page, limit, skip, sort) {
   // const skips = (page + 1) * limit;
   console.log({ page: page, limit: limit, skip: skip });
@@ -14,7 +14,7 @@ async function getAllCustomers(page, limit, skip, sort) {
   console.log(allCustomerData);
   return allCustomerData;
 }
-
+ 
 async function getAllLogs() {
   const allLogs = await client
     .db("DigitalProductPassport")
@@ -23,32 +23,17 @@ async function getAllLogs() {
     .toArray();
   return allLogs;
 }
-
+ 
 async function getCustomerById(id) {
   const customerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
-    .find({ id: id }, function (err, result) {
+    .findOne({ id: id }, function (err, result) {
       if (err) throw err;
-    }).toArray();
-  return customerData; 
+    });
+  return customerData;
 }
-
-async function getCustomerByname(name) {
-  try {
-    const customerData = await client
-      .db("DigitalProductPassport")
-      .collection("CustomerMasterData")
-      .find({ name: { '$regex': name, '$options': 'i' } })
-      .toArray();
-    return customerData;
-  } catch (err) {
-    // console.error(err);
-    throw err;
-  }
-}
-
-
+ 
 async function postCustomer(customerData) {
   const postedCustomerData = await client
     .db("DigitalProductPassport")
@@ -73,7 +58,7 @@ async function deleteCustomer(id) {
 async function custID() {
   const productDetail = await client
     .db("DigitalProductPassport")
-    .collection("NumberRangeMasterData") 
+    .collection("NumberRangeMasterData")
     .findOne({ idType: "Customer" });
   return productDetail;
 }
@@ -91,36 +76,35 @@ async function updateCustRunningNo(num) {
       runningNumber: num,
     },
   };
-
+ 
   const updatedDetails = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .updateOne(filter, update);
   return updatedDetails;
 }
-
+ 
 async function getCustomerCount() {
   const count = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .countDocuments();
-
+ 
   return count;
 }
-
+ 
 async function deleteAllCustomer() {
   const delet = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .deleteMany();
-
+ 
   return delet;
 }
-
+ 
 export {
   getAllLogs,
   getAllCustomers,
-  getCustomerByname,
   getCustomerById,
   postCustomer,
   updateCustomer,
@@ -131,3 +115,4 @@ export {
   getCustomerCount,
   deleteAllCustomer,
 };
+ 
