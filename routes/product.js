@@ -297,15 +297,15 @@ router.post("/postSerials/:id", verifyToken, async (req, res) => {
       res.sendStatus(403);
     } else {
       let { id } = req.params;
-      let serialNos = req.body.serialNos;
+      // let serialNos = req.body.serialNos;
+      // let Hash = req.body.Hash;
+      // let time = req.body.time;
+
+      let data = req.body;
 
       // Wrap the code in an async function
       const processSerials = async () => {
-        const pushedSerials = await Promise.all(
-          serialNos.map(async (serial) => {
-            return await postSerials(serial, id);
-          })
-        );
+        const pushedSerials = await postSerials(id, data);
 
         console.log(pushedSerials);
         res.send(pushedSerials);
