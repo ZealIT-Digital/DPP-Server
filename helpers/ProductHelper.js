@@ -73,9 +73,9 @@ async function getProductsById(id) {
   const productData = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
-    .findOne({ id: id }, function (err, result) {
+    .find({ id: id }, function (err, result) {
       if (err) throw err;
-    });
+    }).toArray();
   return productData;
 }
 
@@ -84,8 +84,8 @@ async function getProductByname(name) {
         const productData = await client
             .db("DigitalProductPassport")
             .collection("ProductMasterData")
-            .find({ name: new RegExp(`^${name}$`, 'i') })
-            .toArray();
+            .find({ name: { '$regex': name, '$options': 'i' } })
+      .toArray();
         return productData;
     } catch (err) {
         throw new Error('Error fetching products by name: ' + err.message);

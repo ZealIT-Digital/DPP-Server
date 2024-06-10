@@ -28,21 +28,26 @@ async function getCustomerById(id) {
   const customerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
-    .findOne({ id: id }, function (err, result) {
+    .find({ id: id }, function (err, result) {
       if (err) throw err;
-    });
+    }).toArray();
   return customerData; 
 }
 
 async function getCustomerByname(name) {
-  const customerData = await client
-    .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
-    .findOne({ name: name }, function (err, result) {
-      if (err) throw err;
-    });
-  return customerData;
+  try {
+    const customerData = await client
+      .db("DigitalProductPassport")
+      .collection("CustomerMasterData")
+      .find({ name: { '$regex': name, '$options': 'i' } })
+      .toArray();
+    return customerData;
+  } catch (err) {
+    // console.error(err);
+    throw err;
   }
+}
+
 
 async function postCustomer(customerData) {
   const postedCustomerData = await client

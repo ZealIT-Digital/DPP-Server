@@ -28,19 +28,7 @@ router.get("/getCustomerById/:id", verifyToken, async (req, res) => {
   });
 });
 
-router.get("/getCustomerByName/:name", verifyToken, async (req, res) => {
-  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-    const { name } = req.params;
-    console.log(name);
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      let { id } = req.params;
-      const result = await getCustomerByname(name);
-      res.send(result);
-    }
-  });
-});
+
 
 router.get("/getCustomerCount", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
@@ -194,7 +182,20 @@ router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     }
   });
 });
-
+router.get("/getCustomerByName/:name", verifyToken, async (req, res) => {
+  console.log("called")
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    const { name } = req.params;
+    console.log(name);
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { id } = req.params;
+      const result = await getCustomerByname(name);
+      res.send(result);
+    }
+  });
+});
 router.get("/getAllCustomers", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
