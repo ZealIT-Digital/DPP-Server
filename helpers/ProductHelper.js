@@ -1,5 +1,5 @@
 import { client } from "../index.js";
-
+ 
 async function getAllProducts(page, limit, skip, sort) {
   const allProductData = await client
     .db("DigitalProductPassport")
@@ -11,7 +11,7 @@ async function getAllProducts(page, limit, skip, sort) {
     .toArray();
   return allProductData;
 }
-
+ 
 async function postUiTemplate(data) {
   const UiTemplate = await client
     .db("DigitalProductPassport")
@@ -46,17 +46,20 @@ async function getAllLogs(page = 1, limit = 5) {
     .toArray();
   return allLogs;
 }
-
-async function postSerials(id, data) {
+ 
+async function postSerials(serialNos, id) {
   let filter = { id: id };
+  // const options = { upsert: true };
   let update = {
-    $push: { serialNos: data },
+    $push: {
+      serialNos: serialNos,
+    },
   };
   const updatedDetails = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .updateOne(filter, update);
-
+ 
   return updatedDetails;
 }
 async function templateID() {
@@ -67,28 +70,12 @@ async function templateID() {
   return productDetail;
 }
 async function getProductsById(id) {
-  const productData = await client
+  let productData = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
-    .find({ id: id }, function (err, result) {
-      if (err) throw err;
-    }).toArray();
+    .findOne({ id: id });
   return productData;
 }
-
-async function getProductByname(name) {
-    try {
-        const productData = await client
-            .db("DigitalProductPassport")
-            .collection("ProductMasterData")
-            .find({ name: new RegExp(`^${name}$`, 'i') })
-            .toArray();
-        return productData;
-    } catch (err) {
-        throw new Error('Error fetching products by name: ' + err.message);
-    }
-}
-
 async function postProduct(productData) {
   const postedProductData = await client
     .db("DigitalProductPassport")
@@ -114,7 +101,7 @@ async function updateProductHeader(data) {
     .updateOne(filter, update);
   return updatedDetails;
 }
-
+ 
 async function updateProduct(productId, tempID) {
   let filter = { id: productId };
   // const options = { upsert: true };
@@ -141,7 +128,7 @@ async function getUiMasterTemplatebyCategory(category) {
     .db("DigitalProductPassport")
     .collection("UiTemplateMaster")
     .findOne({ templateCategory: category });
-
+ 
   return UiTemplate;
 }
 async function getUiTemplate(id) {
@@ -149,7 +136,7 @@ async function getUiTemplate(id) {
     .db("DigitalProductPassport")
     .collection("UiTemplateMaster")
     .findOne({ templateId: id });
-
+ 
   return UiTemplate;
 }
 async function prodID() {
@@ -185,7 +172,7 @@ async function updateTempRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
-
+ 
 async function addProductCategory(data) {
   const postedCustomerData = await client
     .db("DigitalProductPassport")
@@ -193,7 +180,7 @@ async function addProductCategory(data) {
     .insertOne(data);
   return postedCustomerData;
 }
-
+ 
 async function prodCatId() {
   const productCategoryDetail = await client
     .db("DigitalProductPassport")
@@ -201,7 +188,7 @@ async function prodCatId() {
     .findOne({ idType: "Product Category" });
   return productCategoryDetail;
 }
-
+ 
 async function updateProdCatRunningNo(num) {
   let filter = { idType: "Product Category" };
   let update = {
@@ -215,7 +202,7 @@ async function updateProdCatRunningNo(num) {
     .updateOne(filter, update);
   return updatedDetails;
 }
-
+ 
 async function deleteProductCategory(id) {
   const deletedCustomer = await client
     .db("DigitalProductPassport")
@@ -223,7 +210,7 @@ async function deleteProductCategory(id) {
     .deleteOne({ id: id });
   return deletedCustomer;
 }
-
+ 
 async function updateProductCategory(catId, tempID) {
   let filter = { id: catId };
   let update = {
@@ -237,38 +224,37 @@ async function updateProductCategory(catId, tempID) {
     .updateOne(filter, update);
   return updatedCategory;
 }
-
+ 
 async function deleteCategories(ids) {
   const deleted = await client
     .db("DigitalProductPassport")
     .collection("ProductCategoryMasterData")
     .deleteMany({ id: { $in: ids } });
-
+ 
   return deleted;
 }
-
+ 
 async function getProductCount() {
   const count = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .countDocuments();
-
+ 
   return count;
 }
-
+ 
 async function deleteAllProduct() {
   const delet = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .deleteMany();
-
+ 
   return delet;
 }
-
+ 
 export {
   getAllProducts,
   getProductsById,
-  getProductByname,
   postProduct,
   updateProductHeader,
   getAllLogs,
