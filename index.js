@@ -23,7 +23,44 @@ import { blockchainRouter } from "./routes/blockchain.js";
 dotenv.config();
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "https://dpp-client-dev.vercel.app",
+  "https://devdpp.vercel.app",
+  "http://localhost:3000",
+];
+
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (e.g., mobile apps, curl requests)
+//     if (!origin) return callback(null, true);
+
+//     if (allowedOrigins.includes(origin)) {
+//       return callback(null, true);
+//     } else {
+//       return callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+//   allowedHeaders: [
+//     "X-CSRF-Token",
+//     "X-Requested-With",
+//     "Accept",
+//     "Accept-Version",
+//     "Content-Length",
+//     "Content-MD5",
+//     "Content-Type",
+//     "Date",
+//     "X-Api-Version",
+//   ],
+//   credentials: true,
+// };
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
+
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -69,7 +106,7 @@ app.use("/blockchain", blockchainRouter);
 app.get("/routVerification", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
-      res.sendStatus(403);
+      res.status(403).send(err);
     } else {
       res.sendStatus(200);
     }

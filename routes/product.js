@@ -26,6 +26,7 @@ import {
   postSerials,
   deleteAllProduct,
   getProductCount,
+  SerialCheck,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -267,28 +268,52 @@ router.post("/postSerials/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       console.log(err);
+      return res.sendStatus(403);
+    }
+
+    let { id } = req.params;
+    let data = req.body;
+    console.log({ jsonddatafoserial: req.body });
+
+    // Ensure data is an array
+    if (!Array.isArray(data)) {
+      data = [data];
+    }
+
+    try {
+      // Process serials asynchronously
+      const pushedSerials = await Promise.all(
+        data.map(async (serial) => {
+          return await postSerials(serial, id);
+        })
+      );
+
+      console.log(pushedSerials);
+      res.send(pushedSerials);
+    } catch (error) {
+      console.error("Error processing serials:", error);
+      res.sendStatus(500);
+    }
+  });
+});
+router.post("/checkDuplicateSerialkey", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      console.log(err);
       res.sendStatus(403);
     } else {
-      let { id } = req.params;
-      let serialNos = req.body.serialNos;
-
-      // Wrap the code in an async function
-      const processSerials = async () => {
-        const pushedSerials = await Promise.all(
-          serialNos.map(async (serial) => {
-            return await postSerials(serial, id);
-          })
-        );
-
-        console.log(pushedSerials);
-        res.send(pushedSerials);
-      };
-
-      // Call the async function
-      processSerials().catch((error) => {
-        console.error("Error processing serials:", error);
-        res.sendStatus(500);
-      });
+      const { serialkey, productId } = req.body;
+      try {
+        const check = await SerialCheck(serialkey, productId);
+        if (check) {
+          console.log("Error: Serial Already Exists");
+          res.send(true);
+        } else {
+          res.send(false);
+        }
+      } catch (error) {
+        res.status(500).send("Internal Server Error");
+      }
     }
   });
 });

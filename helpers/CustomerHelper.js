@@ -1,5 +1,5 @@
 import { client } from "../index.js";
-
+ 
 async function getAllCustomers(page, limit, skip, sort) {
   // const skips = (page + 1) * limit;
   console.log({ page: page, limit: limit, skip: skip });
@@ -14,7 +14,7 @@ async function getAllCustomers(page, limit, skip, sort) {
   console.log(allCustomerData);
   return allCustomerData;
 }
-
+ 
 async function getAllLogs() {
   const allLogs = await client
     .db("DigitalProductPassport")
@@ -23,7 +23,7 @@ async function getAllLogs() {
     .toArray();
   return allLogs;
 }
-
+ 
 async function getCustomerById(id) {
   const customerData = await client
     .db("DigitalProductPassport")
@@ -33,7 +33,7 @@ async function getCustomerById(id) {
     });
   return customerData;
 }
-
+ 
 async function postCustomer(customerData) {
   const postedCustomerData = await client
     .db("DigitalProductPassport")
@@ -76,32 +76,32 @@ async function updateCustRunningNo(num) {
       runningNumber: num,
     },
   };
-
+ 
   const updatedDetails = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .updateOne(filter, update);
   return updatedDetails;
 }
-
+ 
 async function getCustomerCount() {
   const count = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .countDocuments();
-
+ 
   return count;
 }
-
+ 
 async function deleteAllCustomer() {
   const delet = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .deleteMany();
-
+ 
   return delet;
 }
-
+ 
 export {
   getAllLogs,
   getAllCustomers,
@@ -115,3 +115,4 @@ export {
   getCustomerCount,
   deleteAllCustomer,
 };
+ 

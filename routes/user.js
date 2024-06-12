@@ -54,7 +54,6 @@ router.post("/login", async (req, res) => {
         token: signature,
         dp: loginData.dp,
       };
-      console.log(accumulatedData);
       res.send(accumulatedData);
     });
   } else {
@@ -75,8 +74,6 @@ async function genUserId() {
     let res = await updateusrRunningNo(inc);
     return newId;
   }
-  //        let idDetails = await userid();
-  // console.log(idDetails)
 }
 
 async function updateusrRunningNo(num) {
@@ -115,47 +112,10 @@ const getallUsers = async () => {
 router.post("/getUserData", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let { email } = req.body;
-    console.log(email);
     let userData = await getUserData(email);
     res.send(userData);
   });
 });
-// router.post("/postUser", async (req, res) => {
-//   let userData = req.body;
-//   let userPassword = userData.password;
-//   let saltRounds = 10;
-//   let uid = await genUserId();
-
-//   function test() {
-//     if (userData.role) {
-//       return userData.role;
-//     } else {
-//       return "user";
-//     }
-//   }
-
-//   const postedUser = bcrypt.hash(
-//     userPassword,
-//     saltRounds,
-
-//     async function (err, hash) {
-//       let hashedData = {
-//         firstName: userData.firstName,
-//         lastName: userData.lastName,
-//         email: userData.email,
-//         countryCode: userData.countryCode,
-//         phoneNo: userData.phoneNo,
-//         password: hash,
-//         role: test(),
-//         id: uid,
-//         History: {},
-//       };
-
-//       await createUser(hashedData);
-//       res.send({ success: true, message: "User Saved successfully." });
-//     }
-//   );
-// });
 
 router.post("/postUser", async (req, res) => {
   try {
@@ -196,19 +156,15 @@ router.post("/postUser", async (req, res) => {
         History: {},
       };
 
-      // Save the user data to the database
       await createUser(hashedData);
       res.status(200);
       res.send({ success: true, message: "User saved successfully." });
-      // console.log("success");
     });
   } catch (error) {
     console.error("User with this email Already Exists!:", error);
-    console.log("failed");
   }
 });
 
-// Update the route handler to properly handle async/await
 router.post("/updateUser", async (req, res) => {
   try {
     let userData = req.body;
@@ -217,13 +173,10 @@ router.post("/updateUser", async (req, res) => {
       roles: userData.Roles,
     };
 
-    // Call the updateUser function and wait for it to finish
     await updateUser(jsonData);
 
-    // Send a success response
     res.send({ success: true, message: "User updated successfully." });
   } catch (error) {
-    // If an error occurs, send an error response
     console.error("Error updating user:", error);
     res.status(500).send({
       success: false,
