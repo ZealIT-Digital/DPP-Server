@@ -62,33 +62,51 @@ async function postSerials(data, id) {
 
   return updatedDetails;
 }
-async function SerialCheck(ser) {
+async function SerialCheck(serialkey, productId) {
+  console.log({ serialback: serialkey, prodidback: productId });
   try {
     const duplicates = await client
       .db("DigitalProductPassport")
       .collection("ProductMasterData")
       .aggregate([
         {
+          $match: {
+            id: productId, // Match the specific productId
+          },
+        },
+        {
+          $unwind: "$serialNos", // Unwind the serialNos array to access each element
+        },
+        {
+          $match: {
+            "serialNos.serialNos": parseInt(serialkey), // Match the specific serial number
+          },
+        },
+        {
           $group: {
-            _id: "$serialNos", // Group by serialNos
+            _id: "$serialNos.serialNos", // Group by serialNos
             count: { $sum: 1 }, // Count the number of occurrences
           },
         },
         {
           $match: {
-            count: { $gt: 1 }, // Only keep serial numbers that appear more than once
+            count: { $gt: 0 }, // Only keep serial numbers that appear at least once
           },
         },
       ])
       .toArray();
 
-    console.log("Duplicate serial numbers:", duplicates);
-    return true;
+    console.log(
+      "Duplicate serial numbers found:",
+      duplicates.length > 0 ? duplicates : "None"
+    );
+    return duplicates.length > 0;
   } catch (error) {
     console.error("Error checking for duplicate serial numbers:", error);
     throw error;
   }
 }
+
 async function templateID() {
   const productDetail = await client
     .db("DigitalProductPassport")

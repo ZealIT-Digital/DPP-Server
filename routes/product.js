@@ -296,20 +296,28 @@ router.post("/postSerials/:id", verifyToken, async (req, res) => {
     }
   });
 });
-router.get("/checkDuplicateSerialkey", verifyToken, async (req, res) => {
+router.post("/checkDuplicateSerialkey", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
+      console.log(err);
       res.sendStatus(403);
     } else {
-      const serialkey = req.body;
-      const check = SerialCheck(serialkey);
-      if (check == true) {
-        console.log("errr... Serial Already Exists");
-        res.send(true);
+      const { serialkey, productId } = req.body;
+      try {
+        const check = await SerialCheck(serialkey, productId);
+        if (check) {
+          console.log("Error: Serial Already Exists");
+          res.send(true);
+        } else {
+          res.send(false);
+        }
+      } catch (error) {
+        res.status(500).send("Internal Server Error");
       }
     }
   });
 });
+
 router.post("/postProductCategory", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
