@@ -45,6 +45,7 @@ router.get("/getAllProducts", verifyToken, async (req, res) => {
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
       const skip = parseInt(req.query.skip) || 20;
       const sort = req.query.sort;
+      console.log({ skkkk: skip });
       const allProducts = await getAllProducts(limit, skip, sort);
       res.send(allProducts);
     }

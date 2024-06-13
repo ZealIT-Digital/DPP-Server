@@ -1,8 +1,6 @@
 import { client } from "../index.js";
 
-async function getAllCustomers(page, limit, skip, sort) {
-  // const skips = (page + 1) * limit;
-  console.log({ page: page, limit: limit, skip: skip });
+async function getAllCustomers(limit, skip, sort) {
   const allCustomerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")

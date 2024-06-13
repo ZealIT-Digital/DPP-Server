@@ -214,9 +214,8 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
       const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
       const skip = parseInt(req.query.skip);
-      console.log({ skip: req.query.skip });
       const sort = req.query.sort;
-      const allCustomers = await getAllCustomers(page, limit, skip, sort);
+      const allCustomers = await getAllCustomers(limit, skip, sort);
       res.send(allCustomers);
     }
   });
