@@ -27,6 +27,7 @@ import {
   deleteAllProduct,
   getProductCount,
   SerialCheck,
+  deleteBcHash,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -410,6 +411,19 @@ router.delete("/deleteProductCategory", verifyToken, async (req, res) => {
       let response = deleteCategories(toDelete);
 
       res.send(response);
+    }
+  });
+});
+
+router.put("/deleteBcHash", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { prodId, bcHash } = req.body;
+      let deletedHash = await deleteBcHash(prodId, bcHash);
+
+      res.send(deletedHash);
     }
   });
 });
