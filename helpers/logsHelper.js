@@ -37,9 +37,23 @@ import { client } from "../index.js";
 //   return allLogs;
 // }
 
-async function getAllLogs(page, limit, type, action, date, time) {
+async function getAllLogs(
+  page,
+  limit,
+  type,
+  action,
+  date,
+  time,
+  startDate,
+  endDate
+) {
   const skips = (page - 1) * limit;
-  let query = {};
+  const query = {
+    date: {
+      $gte: startDate,
+      $lte: endDate,
+    },
+  };
 
   // If type is provided, include it in the query
   if (type) {
