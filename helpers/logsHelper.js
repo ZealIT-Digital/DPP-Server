@@ -36,7 +36,6 @@ import { client } from "../index.js";
 
 //   return allLogs;
 // }
-
 async function getAllLogs(
   page,
   limit,
@@ -48,12 +47,15 @@ async function getAllLogs(
   endDate
 ) {
   const skips = (page - 1) * limit;
-  const query = {
-    date: {
+  const query = {};
+
+  // If startDate and endDate are provided, include them in the query
+  if (startDate && endDate) {
+    query.date = {
       $gte: startDate,
       $lte: endDate,
-    },
-  };
+    };
+  }
 
   // If type is provided, include it in the query
   if (type) {
