@@ -342,6 +342,27 @@ async function deleteBcHash(prodId, bcHash) {
   }
 }
 
+async function searchProduct(queryParams) {
+  const query = {};
+
+  // Populate query object dynamically based on provided query parameters
+  for (const param in queryParams) {
+    if (queryParams[param]) {
+      query[param] = { $regex: new RegExp(queryParams[param], 'i') };
+    }
+    }
+  
+
+  const productData = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .find(query)
+    .toArray();
+    
+    return productData;
+
+  }
+
 export {
   getAllProducts,
   getProductsById,
@@ -369,4 +390,5 @@ export {
   getProductCount,
   SerialCheck,
   deleteBcHash,
+  searchProduct,
 };

@@ -28,6 +28,7 @@ import {
   getProductCount,
   SerialCheck,
   deleteBcHash,
+  searchProduct,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -436,6 +437,24 @@ router.delete("/d-a-p", verifyToken, async (req, res) => {
     } else {
       const delet = await deleteAllProduct();
       res.send(delet);
+    }
+  });
+});
+
+router.get("/searchProduct", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      // Get all query parameters from the request
+      const searchParams = req.query;
+      
+      try {
+        const result = await searchProduct(searchParams);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error fetching product data", error });
+      }
     }
   });
 });

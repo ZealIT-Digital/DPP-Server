@@ -100,6 +100,27 @@ async function deleteAllCustomer() {
   return delet;
 }
 
+async function searchCustomers(queryParams) {
+  const query = {};
+
+  // Populate query object dynamically based on provided query parameters
+  for (const param in queryParams) {
+    if (queryParams[param]) {
+      query[param] = { $regex: new RegExp(queryParams[param], 'i') };
+    }
+    }
+  
+
+  const customerData = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .find(query)
+    .toArray();
+    
+    return customerData;
+
+  }
+
 export {
   getAllLogs,
   getAllCustomers,
@@ -112,4 +133,5 @@ export {
   checkcustomer,
   getCustomerCount,
   deleteAllCustomer,
+  searchCustomers,
 };

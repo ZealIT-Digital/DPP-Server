@@ -13,6 +13,7 @@ import {
   checkcustomer,
   getCustomerCount,
   deleteAllCustomer,
+  searchCustomers,
 } from "../helpers/CustomerHelper.js";
 
 router.get("/getCustomer/:id", verifyToken, async (req, res) => {
@@ -231,5 +232,24 @@ router.delete("/d-a-c", verifyToken, async (req, res) => {
     }
   });
 });
+
+router.get("/searchCustomer", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      // Get all query parameters from the request
+      const searchParams = req.query;
+      
+      try {
+        const result = await searchCustomers(searchParams);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error fetching customer data", error });
+      }
+    }
+  });
+});
+
 
 export const customerRouter = router;
