@@ -13,11 +13,25 @@ async function getAllLogs(
   const skips = (page - 1) * limit;
   const query = {};
 
-  // If startDate and endDate are provided, include them in the query
-  if (startDate && endDate) {
+  function formatDate1(dateString) {
+    console.log("date", dateString);
+    const dateObject = new Date(dateString);
+    console.log("dateobject", dateObject);
+    const day = dateObject.getDate().toString().padStart(2, "0");
+    const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
+    const year = dateObject.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  // Check if startDate and endDate are valid dates
+  const start = startDate ? formatDate1(startDate) : null;
+  const end = endDate ? formatDate1(endDate) : null;
+  console.log({ startdate: start, end: end });
+  // If both startDate and endDate are valid, include them in the query
+  if (start && end) {
     query.date = {
-      $gte: startDate,
-      $lte: endDate,
+      $gte: start,
+      $lte: end,
     };
   }
 
@@ -30,17 +44,32 @@ async function getAllLogs(
   if (action) {
     query.action = action;
   }
-  console.log({ date: date, time: time });
-  let logs = await client
-    .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
-    .find(query) // Apply the query to filter logs based on type and action
-    .sort({ date: date, time: time })
-    .skip(skips)
-    .limit(limit)
-    .toArray();
 
-  // No need for additional filtering here
+  console.log({ date: date, time: time });
+
+  // Fetch logs based on the constructed query
+  let logs = [];
+  if (Object.keys(query).length > 0) {
+    logs = await client
+      .db("DigitalProductPassport")
+      .collection("CustomerLogMaster")
+      .find(query) // Apply the query to filter logs based on type and action
+      .sort({ date: date, time: time })
+      .skip(skips)
+      .limit(limit)
+      .toArray();
+    console.log({ logs: logs });
+  } else {
+    // Fetch all logs if no query conditions are applied
+    logs = await client
+      .db("DigitalProductPassport")
+      .collection("CustomerLogMaster")
+      .find()
+      .sort({ date: date, time: time })
+      .skip(skips)
+      .limit(limit)
+      .toArray();
+  }
 
   // Pagination logic
   const totalLogs = await client
