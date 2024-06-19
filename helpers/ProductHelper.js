@@ -363,6 +363,18 @@ async function searchProduct(queryParams) {
 
   }
 
+  async function sortProducts(sortType){
+
+    const sortedProducts = await client
+       .db("DigitalProductPassport")
+       .collection("ProductMasterData")
+       .find().sort({id:sortType})
+       .toArray();
+   
+   return sortedProducts;
+   }
+
+
 export {
   getAllProducts,
   getProductsById,
@@ -391,4 +403,6 @@ export {
   SerialCheck,
   deleteBcHash,
   searchProduct,
+  sortProducts,
+ 
 };

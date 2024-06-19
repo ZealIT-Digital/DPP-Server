@@ -29,6 +29,7 @@ import {
   SerialCheck,
   deleteBcHash,
   searchProduct,
+  sortProducts,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -458,5 +459,26 @@ router.get("/searchProduct", verifyToken, async (req, res) => {
     }
   });
 });
+
+
+router.get("/sortProducts", verifyToken, async (req,res)=>{
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    
+    if (err) {
+      res.sendStatus(403);
+    } else {
+     
+      const sortType = req.body.sortType;
+      
+      try {
+        const result = await sortProducts(sortType);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error fetching product data", error });
+      }
+    } 
+  });
+});
+
 
 export const productRouter = router;

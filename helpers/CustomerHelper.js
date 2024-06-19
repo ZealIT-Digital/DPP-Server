@@ -121,6 +121,18 @@ async function searchCustomers(queryParams) {
 
   }
 
+  async function sortCustomers(sortType){
+
+    const sortedCustomers = await client
+       .db("DigitalProductPassport")
+       .collection("CustomerMasterData")
+       .find().sort({id:sortType})
+       .toArray();
+   
+   return sortedCustomers;
+   }
+
+
 export {
   getAllLogs,
   getAllCustomers,
@@ -134,4 +146,5 @@ export {
   getCustomerCount,
   deleteAllCustomer,
   searchCustomers,
+  sortCustomers,
 };
