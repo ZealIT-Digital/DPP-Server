@@ -218,7 +218,7 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
       const skip = parseInt(req.query.skip);
       const sort = req.query.sort;
       const allCustomers = await getAllCustomers(limit, skip, sort);
-      if (allCustomers?.length > 0) {
+      if (allCustomers?.length < 0) {
         res.status(204);
       } else {
         res.send(allCustomers);
