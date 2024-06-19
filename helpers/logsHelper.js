@@ -13,25 +13,16 @@ async function getAllLogs(
   const skips = (page - 1) * limit;
   const query = {};
 
-  function formatDate1(dateString) {
-    console.log("date", dateString);
-    const dateObject = new Date(dateString);
-    console.log("dateobject", dateObject);
-    const day = dateObject.getDate().toString().padStart(2, "0");
-    const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
-    const year = dateObject.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
-
   // Check if startDate and endDate are valid dates
-  const start = startDate ? formatDate1(startDate) : null;
-  const end = endDate ? formatDate1(endDate) : null;
-  console.log({ startdate: start, end: end });
-  // If both startDate and endDate are valid, include them in the query
-  if (start && end) {
+  if (startDate && endDate) {
+    // Adjust endDate to include the entire day by adding one day and setting it to the start of that day
+    const adjustedEndDate = new Date(endDate);
+    adjustedEndDate.setDate(adjustedEndDate.getDate() + 1); // Add one day
+    adjustedEndDate.setHours(0, 0, 0, 0); // Set to start of day
+
     query.date = {
-      $gte: start,
-      $lte: end,
+      $gte: new Date(startDate),
+      $lt: adjustedEndDate,
     };
   }
 
@@ -45,30 +36,23 @@ async function getAllLogs(
     query.action = action;
   }
 
-  console.log({ date: date, time: time });
+  console.log({ startDate, endDate }); // Debugging to ensure startDate and endDate are correctly passed
 
   // Fetch logs based on the constructed query
   let logs = [];
-  if (Object.keys(query).length > 0) {
+  try {
     logs = await client
       .db("DigitalProductPassport")
       .collection("CustomerLogMaster")
-      .find(query) // Apply the query to filter logs based on type and action
+      .find(query)
       .sort({ date: date, time: time })
       .skip(skips)
       .limit(limit)
       .toArray();
-    console.log({ logs: logs });
-  } else {
-    // Fetch all logs if no query conditions are applied
-    logs = await client
-      .db("DigitalProductPassport")
-      .collection("CustomerLogMaster")
-      .find()
-      .sort({ date: date, time: time })
-      .skip(skips)
-      .limit(limit)
-      .toArray();
+    console.log({ logs: logs }); // Debugging to see fetched logs
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+    throw error;
   }
 
   // Pagination logic
@@ -84,24 +68,16 @@ async function getAllLogs(
 
 async function GetLogs(startDate, endDate, type, action) {
   try {
-    // Format dates to ensure they are strings in 'YYYY-MM-DD' format
-    const start = formatDate1(startDate);
-    const end = formatDate1(endDate);
-    function formatDate1(dateString) {
-      console.log("date", dateString);
-      const dateObject = new Date(dateString);
-      console.log("dateobject", dateObject);
-      const day = dateObject.getDate().toString().padStart(2, "0");
-      const month = (dateObject.getMonth() + 1).toString().padStart(2, "0");
-      const year = dateObject.getFullYear();
-      return `${day}/${month}/${year}`;
-    }
+    // Adjust endDate to include the entire day by adding one day and setting it to the start of that day
+    const adjustedEndDate = new Date(endDate);
+    adjustedEndDate.setDate(adjustedEndDate.getDate() + 1); // Add one day
+    adjustedEndDate.setHours(0, 0, 0, 0); // Set to start of day
 
     // Construct the query object
     const query = {
       date: {
-        $gte: start,
-        $lte: end,
+        $gte: new Date(startDate), // Convert startDate to Date object
+        $lt: adjustedEndDate, // Use $lt to include up to the end of adjustedEndDate (exclusive)
       },
     };
 
@@ -130,11 +106,23 @@ async function GetLogs(startDate, endDate, type, action) {
 }
 
 async function PostLogs(logs) {
-  const PostedLogs = await client
-    .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
-    .insertOne(logs);
-  return PostedLogs;
+  // Assuming logs.date is already a Date object or can be parsed into one
+  const formattedLogs = {
+    ...logs,
+    date: new Date(logs.date), // Convert logs.date to a Date object
+  };
+
+  try {
+    const dbResponse = await client
+      .db("DigitalProductPassport")
+      .collection("CustomerLogMaster")
+      .insertOne(formattedLogs);
+
+    return dbResponse;
+  } catch (error) {
+    console.error("Error inserting logs:", error);
+    throw error; // Handle or propagate the error as needed
+  }
 }
 
 export { getAllLogs, PostLogs, GetLogs };
