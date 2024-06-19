@@ -56,10 +56,18 @@ async function postConnectionParams(id, data) {
   return postConnection;
 }
 
+async function deleteConnectionCategory(id) {
+  const deleted = await client
+    .db("DigitalProductPassport")
+    .collection("ConnectionMasterData")
+    .deleteOne({ id: id });
+}
+
 export {
   getallConnection,
   postConnectionHeader,
   postConnectionParams,
   updateConnectionRunningNo,
   connectionID,
+  deleteConnectionCategory,
 };

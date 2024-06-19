@@ -45,6 +45,7 @@ router.post("/login", async (req, res) => {
 
     bcrypt.compare(password, hashedPassword, function (err, result) {
       let accumulatedData = {
+        id: loginData.id,
         firstName: loginData.firstName,
         lastName: loginData.lastName,
         email: loginData.email,

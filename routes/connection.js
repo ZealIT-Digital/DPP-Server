@@ -7,6 +7,7 @@ import {
   postConnectionParams,
   connectionID,
   updateConnectionRunningNo,
+  deleteConnectionCategory,
 } from "../helpers/connectionHelper.js";
 
 // Middleware function to verify JWT
@@ -78,5 +79,23 @@ router.put("/postConnectionParams/:id", verifyToken, async (req, res) => {
     }
   });
 });
+
+router.delete(
+  "/deleteConnectionCategory/:id",
+  verifyToken,
+  async (req, res) => {
+    jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+      if (err) {
+        res.sendStatus(403);
+      } else {
+        let { id } = req.params;
+
+        const deletedConnection = await deleteConnectionCategory(id);
+
+        res.send(deletedConnection);
+      }
+    });
+  }
+);
 
 export const connectionRouter = router;
