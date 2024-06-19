@@ -14,6 +14,7 @@ import {
   getCustomerCount,
   deleteAllCustomer,
   searchCustomers,
+  sortCustomers,
 } from "../helpers/CustomerHelper.js";
 
 router.get("/getCustomer/:id", verifyToken, async (req, res) => {
@@ -247,6 +248,25 @@ router.get("/searchCustomer", verifyToken, async (req, res) => {
 
       try {
         const result = await searchCustomers(searchParams);
+        res.send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .send({ message: "Error fetching customer data", error });
+      }
+    }
+  });
+});
+
+router.get("/sortCustomers", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const sortType = req.body.sortType;
+
+      try {
+        const result = await sortCustomers(sortType);
         res.send(result);
       } catch (error) {
         res
