@@ -27,6 +27,8 @@ import {
   deleteAllProduct,
   getProductCount,
   SerialCheck,
+  deleteBcHash,
+  searchProduct,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -44,6 +46,7 @@ router.get("/getAllProducts", verifyToken, async (req, res) => {
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
       const skip = parseInt(req.query.skip) || 20;
       const sort = req.query.sort;
+      console.log({ skkkk: skip });
       const allProducts = await getAllProducts(limit, skip, sort);
       res.send(allProducts);
     }
@@ -414,6 +417,19 @@ router.delete("/deleteProductCategory", verifyToken, async (req, res) => {
   });
 });
 
+router.put("/deleteBcHash", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      let { prodId, bcHash } = req.body;
+      let deletedHash = await deleteBcHash(prodId, bcHash);
+
+      res.send(deletedHash);
+    }
+  });
+});
+
 router.delete("/d-a-p", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
@@ -421,6 +437,24 @@ router.delete("/d-a-p", verifyToken, async (req, res) => {
     } else {
       const delet = await deleteAllProduct();
       res.send(delet);
+    }
+  });
+});
+
+router.get("/searchProduct", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      // Get all query parameters from the request
+      const searchParams = req.query;
+      
+      try {
+        const result = await searchProduct(searchParams);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error fetching product data", error });
+      }
     }
   });
 });

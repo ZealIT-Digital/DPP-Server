@@ -27,9 +27,20 @@ router.get("/getAllLogs", verifyToken, async (req, res) => {
       const action = req.query.action || ""; // Extract action query parameter
       const date = req.query.date;
       const time = req.query.time;
+      const startDate = req.query.startDate;
+      const endDate = req.query.endDate;
 
       try {
-        const allLogs = await getAllLogs(page, limit, type, action, date, time); // Pass type and action to getAllLogs
+        const allLogs = await getAllLogs(
+          page,
+          limit,
+          type,
+          action,
+          date,
+          time,
+          startDate,
+          endDate
+        ); // Pass type and action to getAllLogs
         res.send(allLogs);
       } catch (error) {
         console.error("Error fetching logs:", error);

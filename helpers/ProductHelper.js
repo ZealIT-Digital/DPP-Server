@@ -1,3 +1,4 @@
+import { hash } from "bcrypt";
 import { client } from "../index.js";
 
 async function getAllProducts(page, limit, skip, sort) {
@@ -297,6 +298,71 @@ async function deleteAllProduct() {
   return delet;
 }
 
+async function deleteBcHash(prodId, bcHash) {
+  try {
+    let filter = { id: prodId };
+    let update = {
+      $pull: {
+        serialNos: { Hash: bcHash },
+      },
+    };
+
+    const deletedHash = await client
+      .db("DigitalProductPassport")
+      .collection("ProductMasterData")
+      .updateOne(filter, update);
+
+    if (deletedHash.modifiedCount != 0) {
+      const currentDate = new Date();
+
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+      const day = String(currentDate.getDate()).padStart(2, "0");
+      const hours = String(currentDate.getHours()).padStart(2, "0");
+      const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+
+      const formattedDate = `${day}-${month}-${year} `;
+      const formattedTime = `${hours}:${minutes}`;
+
+      let insertionData = {
+        productID: prodId,
+        Hash: bcHash,
+        deletionTime: `${formattedDate}|${formattedTime}`,
+      };
+      const addToVoid = await client
+        .db("DigitalProductPassport")
+        .collection("BlockChainVoidTransactions")
+        .insertOne(insertionData);
+    }
+
+    return deletedHash;
+  } catch (err) {
+    console.error("Error deleting hash from the serialNos array:", err);
+    throw err;
+  }
+}
+
+async function searchProduct(queryParams) {
+  const query = {};
+
+  // Populate query object dynamically based on provided query parameters
+  for (const param in queryParams) {
+    if (queryParams[param]) {
+      query[param] = { $regex: new RegExp(queryParams[param], 'i') };
+    }
+    }
+  
+
+  const productData = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .find(query)
+    .toArray();
+    
+    return productData;
+
+  }
+
 export {
   getAllProducts,
   getProductsById,
@@ -323,4 +389,6 @@ export {
   deleteAllProduct,
   getProductCount,
   SerialCheck,
+  deleteBcHash,
+  searchProduct,
 };

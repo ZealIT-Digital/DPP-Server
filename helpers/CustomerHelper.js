@@ -1,8 +1,6 @@
 import { client } from "../index.js";
- 
-async function getAllCustomers(page, limit, skip, sort) {
-  // const skips = (page + 1) * limit;
-  console.log({ page: page, limit: limit, skip: skip });
+
+async function getAllCustomers(limit, skip, sort) {
   const allCustomerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
@@ -11,10 +9,10 @@ async function getAllCustomers(page, limit, skip, sort) {
     .limit(limit)
     .sort({ id: sort })
     .toArray();
-  console.log(allCustomerData);
+
   return allCustomerData;
 }
- 
+
 async function getAllLogs() {
   const allLogs = await client
     .db("DigitalProductPassport")
@@ -23,7 +21,7 @@ async function getAllLogs() {
     .toArray();
   return allLogs;
 }
- 
+
 async function getCustomerById(id) {
   const customerData = await client
     .db("DigitalProductPassport")
@@ -33,7 +31,7 @@ async function getCustomerById(id) {
     });
   return customerData;
 }
- 
+
 async function postCustomer(customerData) {
   const postedCustomerData = await client
     .db("DigitalProductPassport")
@@ -76,32 +74,53 @@ async function updateCustRunningNo(num) {
       runningNumber: num,
     },
   };
- 
+
   const updatedDetails = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
     .updateOne(filter, update);
   return updatedDetails;
 }
- 
+
 async function getCustomerCount() {
   const count = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .countDocuments();
- 
+
   return count;
 }
- 
+
 async function deleteAllCustomer() {
   const delet = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .deleteMany();
- 
+
   return delet;
 }
- 
+
+async function searchCustomers(queryParams) {
+  const query = {};
+
+  // Populate query object dynamically based on provided query parameters
+  for (const param in queryParams) {
+    if (queryParams[param]) {
+      query[param] = { $regex: new RegExp(queryParams[param], 'i') };
+    }
+    }
+  
+
+  const customerData = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .find(query)
+    .toArray();
+    
+    return customerData;
+
+  }
+
 export {
   getAllLogs,
   getAllCustomers,
@@ -114,5 +133,5 @@ export {
   checkcustomer,
   getCustomerCount,
   deleteAllCustomer,
+  searchCustomers,
 };
- 

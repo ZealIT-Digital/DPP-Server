@@ -93,6 +93,16 @@ function verifyToken(req, res, next) {
   }
 }
 
+const verifyRole = (roles) => async (req, res, next) => {
+  let id = req.body;
+
+  const employee = await genUserId(id);
+
+  !roles.includes(employee.role)
+    ? res.status(401).json("Sorry you do not have access to this route")
+    : next();
+};
+
 app.use("/entry", entryRouter);
 app.use("/product", productRouter);
 app.use("/customer", customerRouter);
