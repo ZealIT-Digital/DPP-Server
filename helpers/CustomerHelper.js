@@ -1,6 +1,7 @@
 import { client } from "../index.js";
 
 async function getAllCustomers(limit, skip, sort) {
+  console.log("mskip", skip);
   const allCustomerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
@@ -106,20 +107,18 @@ async function searchCustomers(queryParams) {
   // Populate query object dynamically based on provided query parameters
   for (const param in queryParams) {
     if (queryParams[param]) {
-      query[param] = { $regex: new RegExp(queryParams[param], 'i') };
+      query[param] = { $regex: new RegExp(queryParams[param], "i") };
     }
-    }
-  
+  }
 
   const customerData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
     .find(query)
     .toArray();
-    
-    return customerData;
 
-  }
+  return customerData;
+}
 
 export {
   getAllLogs,

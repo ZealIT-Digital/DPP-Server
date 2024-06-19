@@ -217,7 +217,11 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
       const skip = parseInt(req.query.skip);
       const sort = req.query.sort;
       const allCustomers = await getAllCustomers(limit, skip, sort);
-      res.send(allCustomers);
+      if (allCustomers?.length > 0) {
+        res.status(204);
+      } else {
+        res.send(allCustomers);
+      }
     }
   });
 });
@@ -240,16 +244,17 @@ router.get("/searchCustomer", verifyToken, async (req, res) => {
     } else {
       // Get all query parameters from the request
       const searchParams = req.query;
-      
+
       try {
         const result = await searchCustomers(searchParams);
         res.send(result);
       } catch (error) {
-        res.status(500).send({ message: "Error fetching customer data", error });
+        res
+          .status(500)
+          .send({ message: "Error fetching customer data", error });
       }
     }
   });
 });
-
 
 export const customerRouter = router;
