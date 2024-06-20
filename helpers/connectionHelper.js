@@ -1,4 +1,54 @@
 import { client } from "../index.js";
+import crypto from "crypto";
+
+function encryptPassword(password, secretKey) {
+  const algorithm = "aes-256-ctr"; // Encryption algorithm
+  const iv = crypto.randomBytes(16); // Initialization vector
+
+  const cipher = crypto.createCipheriv(
+    algorithm,
+    Buffer.from(secretKey, "hex"),
+    iv
+  );
+  const encryptedPassword = Buffer.concat([
+    cipher.update(password),
+    cipher.final(),
+  ]);
+
+  return {
+    iv: iv.toString("hex"),
+    encryptedPassword: encryptedPassword.toString("hex"),
+  };
+}
+
+function decryptPassword(encryptedPassword, iv, secretKey) {
+  const algorithm = "aes-256-ctr"; // Encryption algorithm
+  const decipher = crypto.createDecipheriv(
+    algorithm,
+    Buffer.from(secretKey, "hex"),
+    Buffer.from(iv, "hex")
+  );
+
+  const decryptedPassword = Buffer.concat([
+    decipher.update(Buffer.from(encryptedPassword, "hex")),
+    decipher.final(),
+  ]);
+
+  return decryptedPassword.toString();
+}
+
+const password = "my-secret-password";
+const secretKey = crypto.randomBytes(32).toString("hex"); // Secret key for encryption
+
+const encrypted = encryptPassword(password, secretKey);
+console.log("Encrypted Password:", encrypted);
+
+const decrypted = decryptPassword(
+  encrypted.encryptedPassword,
+  encrypted.iv,
+  secretKey
+);
+console.log("Decrypted Password:", decrypted);
 
 async function connectionCategoryID() {
   const productDetail = await client

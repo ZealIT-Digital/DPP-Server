@@ -127,9 +127,10 @@ router.put("/deleteConnection/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let toDelete = req.body;
 
-      toDelete.map(async (del) => {
-        const deleted = await deleteConnection(id, del);
+      const deleted = toDelete.map(async (del) => {
+        await deleteConnection(id, del);
       });
+      res.send(deleted);
     }
   });
 });
