@@ -155,6 +155,10 @@ router.post("/postUser", async (req, res) => {
         role: test(),
         id: uid,
         History: {},
+        dp: userData.dp,
+        middleName: userData.middleName,
+        gender: userData.gender,
+        title: userData.title,
       };
 
       await createUser(hashedData);
