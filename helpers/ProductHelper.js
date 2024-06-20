@@ -107,7 +107,13 @@ async function SerialCheck(serialkey, productId) {
     throw error;
   }
 }
-
+async function checkproduct(name) {
+  const userData = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .findOne({ name: name });
+  return userData;
+}
 async function templateID() {
   const productDetail = await client
     .db("DigitalProductPassport")
@@ -348,32 +354,29 @@ async function searchProduct(queryParams) {
   // Populate query object dynamically based on provided query parameters
   for (const param in queryParams) {
     if (queryParams[param]) {
-      query[param] = { $regex: new RegExp(queryParams[param], 'i') };
+      query[param] = { $regex: new RegExp(queryParams[param], "i") };
     }
-    }
-  
+  }
 
   const productData = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .find(query)
     .toArray();
-    
-    return productData;
 
-  }
+  return productData;
+}
 
-  async function sortProducts(sortType){
+async function sortProducts(sortType) {
+  const sortedProducts = await client
+    .db("DigitalProductPassport")
+    .collection("ProductMasterData")
+    .find()
+    .sort({ id: sortType })
+    .toArray();
 
-    const sortedProducts = await client
-       .db("DigitalProductPassport")
-       .collection("ProductMasterData")
-       .find().sort({id:sortType})
-       .toArray();
-   
-   return sortedProducts;
-   }
-
+  return sortedProducts;
+}
 
 export {
   getAllProducts,
@@ -404,5 +407,5 @@ export {
   deleteBcHash,
   searchProduct,
   sortProducts,
- 
+  checkproduct,
 };

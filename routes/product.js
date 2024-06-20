@@ -30,6 +30,7 @@ import {
   deleteBcHash,
   searchProduct,
   sortProducts,
+  checkproduct,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -121,11 +122,20 @@ router.get("/getProduct/:id", verifyToken, async (req, res) => {
 
 router.post("/postProduct", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    console.log(req.body);
+    const existingProduct = await checkproduct(req.body.name);
+    if (existingProduct) {
+      res
+        .status(301)
+        .send({ message: "Product with this Name already exists." });
+      console.log("Product with this Name already exists.");
+    }
     if (err) {
       console.log(err);
       res.sendStatus(403);
     } else {
       let prodData = req.body;
+      prodData.name = prodData.name.toUpperCase();
       let prodCat = prodData.category;
       let uiData = await getUiMasterTemplatebyCategory(prodCat);
       delete uiData?._id;
@@ -169,6 +179,7 @@ router.post("/updateProductHeader/:id", verifyToken, async (req, res) => {
     } else {
       let { id } = req.params;
       let productData = req.body;
+      productData.name = productData.name.toUpperCase();
       const postedProductData = await updateProductHeader(productData);
       console.log(postedProductData);
       res.send(postedProductData);
@@ -449,7 +460,7 @@ router.get("/searchProduct", verifyToken, async (req, res) => {
     } else {
       // Get all query parameters from the request
       const searchParams = req.query;
-      
+
       try {
         const result = await searchProduct(searchParams);
         res.send(result);
@@ -460,25 +471,21 @@ router.get("/searchProduct", verifyToken, async (req, res) => {
   });
 });
 
-
-router.get("/sortProducts", verifyToken, async (req,res)=>{
+router.get("/sortProducts", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
-    
     if (err) {
       res.sendStatus(403);
     } else {
-     
       const sortType = req.body.sortType;
-      
+
       try {
         const result = await sortProducts(sortType);
         res.send(result);
       } catch (error) {
         res.status(500).send({ message: "Error fetching product data", error });
       }
-    } 
+    }
   });
 });
-
 
 export const productRouter = router;
