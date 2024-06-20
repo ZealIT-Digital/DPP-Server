@@ -1,15 +1,15 @@
 import { client } from "../index.js";
 
-async function connectionID() {
+async function connectionCategoryID() {
   const productDetail = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
-    .findOne({ idType: "Connections" });
+    .findOne({ idType: "Connection Category" });
   return productDetail;
 }
 
-async function updateConnectionRunningNo(num) {
-  let filter = { idType: "Connections" };
+async function updateConnectionCategoryRunningNo(num) {
+  let filter = { idType: "Connection Category" };
   let update = {
     $set: {
       runningNumber: num,
@@ -61,13 +61,56 @@ async function deleteConnectionCategory(id) {
     .db("DigitalProductPassport")
     .collection("ConnectionMasterData")
     .deleteOne({ id: id });
+  return deleted;
+}
+
+async function connectionID() {
+  const productDetail = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .findOne({ idType: "Connections" });
+  return productDetail;
+}
+
+async function updateConnectionRunningNo(num) {
+  let filter = { idType: "Connections" };
+  let update = {
+    $set: {
+      runningNumber: num,
+    },
+  };
+
+  const updatedDetails = await client
+    .db("DigitalProductPassport")
+    .collection("NumberRangeMasterData")
+    .updateOne(filter, update);
+  return updatedDetails;
+}
+
+async function deleteConnection(conCatId, conId) {
+  let filter = { id: conCatId };
+  let update = {
+    $pull: {
+      connections: { uid: conId },
+    },
+  };
+
+  const updated = await client
+    .db("DigitalProductPassport")
+    .collection("ConnectionMasterData")
+    .updateOne(filter, update);
+
+  return updated;
 }
 
 export {
   getallConnection,
   postConnectionHeader,
   postConnectionParams,
-  updateConnectionRunningNo,
-  connectionID,
+  updateConnectionCategoryRunningNo,
+  connectionCategoryID,
   deleteConnectionCategory,
+  connectionID,
+  updateConnectionRunningNo,
+  deleteConnection,
 };
