@@ -11,6 +11,9 @@ import {
   connectionID,
   updateConnectionRunningNo,
   deleteConnection,
+  encrypt,
+  decrypt,
+  postEncConnections,
 } from "../helpers/connectionHelper.js";
 
 // Middleware function to verify JWT
@@ -77,8 +80,13 @@ router.put("/postConnectionParams/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let data = req.body;
 
+      let dataCopy = JSON.parse(JSON.stringify(data));
+
+      delete dataCopy.ConnectionType;
+      delete dataCopy.Description;
+      let encry = encrypt(dataCopy.toString());
+
       let idDetails = await connectionID();
-      console.log(idDetails);
       let prefix = idDetails.prefix;
       let running = idDetails.runningNumber;
       let rangeStart = idDetails.rangeStart;
@@ -91,14 +99,48 @@ router.put("/postConnectionParams/:id", verifyToken, async (req, res) => {
         updateConnectionRunningNo(inc);
 
         data.uid = conId;
-
+        console.log({ dta: data });
         const connectionParam = await postConnectionParams(id, data);
-        res.send(connectionParam);
+
+        let sd = {
+          connectionCategory: id,
+          connectionId: conId,
+          connectionParams: {
+            iv: encry.iv,
+            encryptedPassword: encry.encryptedPassword,
+          },
+        };
+
+        const postSecret = await postEncConnections(sd);
+
+        res.send({ secretKey: encry.secretKey });
       } else {
         res.send({ message: "ID Range did not match" });
       }
     }
   });
+});
+
+router.post("/encrypt", async (req, res) => {
+  const { password, secretKey } = req.body;
+
+  if (!password) {
+    return res.status(400).send("Password is required");
+  }
+
+  const encrypted = encrypt(password);
+  res.json(encrypted);
+});
+
+router.post("/decrypt", async (req, res) => {
+  const { encryptedPassword, iv, secretKey } = req.body;
+
+  if (!encryptedPassword || !iv) {
+    return res.status(400).send("Encrypted password and IV are required");
+  }
+
+  const decryptedPassword = decrypt(encryptedPassword, iv, secretKey);
+  res.json({ decryptedPassword });
 });
 
 router.delete(

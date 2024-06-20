@@ -1,9 +1,11 @@
 import { client } from "../index.js";
 import crypto from "crypto";
 
-function encryptPassword(password, secretKey) {
-  const algorithm = "aes-256-ctr"; // Encryption algorithm
-  const iv = crypto.randomBytes(16); // Initialization vector
+function encrypt(password) {
+  const algorithm = "aes-256-ctr";
+  const iv = crypto.randomBytes(16);
+
+  const secretKey = crypto.randomBytes(32).toString("hex");
 
   const cipher = crypto.createCipheriv(
     algorithm,
@@ -18,11 +20,12 @@ function encryptPassword(password, secretKey) {
   return {
     iv: iv.toString("hex"),
     encryptedPassword: encryptedPassword.toString("hex"),
+    secretKey: secretKey,
   };
 }
 
-function decryptPassword(encryptedPassword, iv, secretKey) {
-  const algorithm = "aes-256-ctr"; // Encryption algorithm
+function decrypt(encryptedPassword, iv, secretKey) {
+  const algorithm = "aes-256-ctr";
   const decipher = crypto.createDecipheriv(
     algorithm,
     Buffer.from(secretKey, "hex"),
@@ -36,19 +39,6 @@ function decryptPassword(encryptedPassword, iv, secretKey) {
 
   return decryptedPassword.toString();
 }
-
-const password = "my-secret-password";
-const secretKey = crypto.randomBytes(32).toString("hex"); // Secret key for encryption
-
-const encrypted = encryptPassword(password, secretKey);
-console.log("Encrypted Password:", encrypted);
-
-const decrypted = decryptPassword(
-  encrypted.encryptedPassword,
-  encrypted.iv,
-  secretKey
-);
-console.log("Decrypted Password:", decrypted);
 
 async function connectionCategoryID() {
   const productDetail = await client
@@ -153,6 +143,14 @@ async function deleteConnection(conCatId, conId) {
   return updated;
 }
 
+async function postEncConnections(data) {
+  const secret = await client
+    .db("DPP-Connections")
+    .collection("ConnectionParams")
+    .insertOne(data);
+  return secret;
+}
+
 export {
   getallConnection,
   postConnectionHeader,
@@ -163,4 +161,7 @@ export {
   connectionID,
   updateConnectionRunningNo,
   deleteConnection,
+  encrypt,
+  decrypt,
+  postEncConnections,
 };
