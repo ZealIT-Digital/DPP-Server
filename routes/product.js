@@ -29,6 +29,8 @@ import {
   SerialCheck,
   deleteBcHash,
   searchProduct,
+  sortProducts,
+  checkproduct,
 } from "../helpers/ProductHelper.js";
 
 import { updateUi } from "../helpers/UiHelper.js";
@@ -121,13 +123,33 @@ router.get("/getProduct/:id", verifyToken, async (req, res) => {
 router.post("/postProduct", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
-      console.log(err);
-      res.sendStatus(403);
-    } else {
+      console.error("Token verification error:", err);
+      return res.sendStatus(403);
+    }
+
+    try {
+      console.log("Request body:", req.body);
+      const existingProduct = await checkproduct(req.body.name.toUpperCase());
+      if (existingProduct) {
+        console.log("Product with this name already exists.");
+        return res
+          .status(301)
+          .send({ message: "Product with this Name already exists." });
+      }
+
       let prodData = req.body;
+      prodData.name = prodData.name.toUpperCase();
       let prodCat = prodData.category;
       let uiData = await getUiMasterTemplatebyCategory(prodCat);
-      delete uiData?._id;
+
+      if (!uiData) {
+        console.log("UI Master Template not found for category:", prodCat);
+        return res
+          .status(404)
+          .send({ message: "UI Master Template not found for category." });
+      }
+
+      delete uiData._id;
 
       let idDetails = await templateID();
       let prefix = idDetails.prefix;
@@ -136,9 +158,9 @@ router.post("/postProduct", verifyToken, async (req, res) => {
       let rangeEnd = idDetails.rangeEnd;
 
       let inc = parseInt(running) + 1;
-      let tempId = prefix + "-" + inc;
+      let tempId = `${prefix}-${inc}`;
 
-      delete uiData?.templateCategory;
+      delete uiData.templateCategory;
 
       if (uiData) {
         uiData.templateId = tempId;
@@ -146,16 +168,20 @@ router.post("/postProduct", verifyToken, async (req, res) => {
       }
 
       if (inc > rangeStart && inc < rangeEnd) {
-        const postedTemplate = await postUiTemplate(uiData);
+        await postUiTemplate(uiData);
         await updateTempRunningNo(inc);
 
         const postedProductData = await postProduct(prodData);
-        console.log(postedProductData);
+        console.log("Posted product data:", postedProductData);
         res.send(postedProductData);
       } else {
-        res.send({ message: "ID Range did not match" });
+        console.log("ID Range did not match");
+        res.status(400).send({ message: "ID Range did not match" });
       }
-      console.log(uiData);
+      console.log("UI Data:", uiData);
+    } catch (error) {
+      console.error("Server error:", error);
+      res.status(500).send({ message: "Server error" });
     }
   });
 });
@@ -168,6 +194,7 @@ router.post("/updateProductHeader/:id", verifyToken, async (req, res) => {
     } else {
       let { id } = req.params;
       let productData = req.body;
+      productData.name = productData.name.toUpperCase();
       const postedProductData = await updateProductHeader(productData);
       console.log(postedProductData);
       res.send(postedProductData);
@@ -448,9 +475,26 @@ router.get("/searchProduct", verifyToken, async (req, res) => {
     } else {
       // Get all query parameters from the request
       const searchParams = req.query;
-      
+
       try {
         const result = await searchProduct(searchParams);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ message: "Error fetching product data", error });
+      }
+    }
+  });
+});
+
+router.get("/sortProducts", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const sortType = req.body.sortType;
+
+      try {
+        const result = await sortProducts(sortType);
         res.send(result);
       } catch (error) {
         res.status(500).send({ message: "Error fetching product data", error });

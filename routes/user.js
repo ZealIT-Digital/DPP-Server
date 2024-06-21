@@ -45,6 +45,7 @@ router.post("/login", async (req, res) => {
 
     bcrypt.compare(password, hashedPassword, function (err, result) {
       let accumulatedData = {
+        id: loginData.id,
         firstName: loginData.firstName,
         lastName: loginData.lastName,
         email: loginData.email,
@@ -154,6 +155,10 @@ router.post("/postUser", async (req, res) => {
         role: test(),
         id: uid,
         History: {},
+        dp: userData.dp,
+        middleName: userData.middleName,
+        gender: userData.gender,
+        title: userData.title,
       };
 
       await createUser(hashedData);
@@ -165,25 +170,25 @@ router.post("/postUser", async (req, res) => {
   }
 });
 
-router.post("/updateUser", async (req, res) => {
-  try {
-    let userData = req.body;
-    let jsonData = {
-      allowed: userData.allowed,
-      roles: userData.Roles,
-    };
+// router.post("/updateUser", async (req, res) => {
+//   try {
+//     let userData = req.body;
+//     let jsonData = {
+//       allowed: userData.allowed,
+//       roles: userData.Roles,
+//     };
 
-    await updateUser(jsonData);
+//     await updateUser(jsonData);
 
-    res.send({ success: true, message: "User updated successfully." });
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).send({
-      success: false,
-      error: "An error occurred while updating user.",
-    });
-  }
-});
+//     res.send({ success: true, message: "User updated successfully." });
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).send({
+//       success: false,
+//       error: "An error occurred while updating user.",
+//     });
+//   }
+// });
 
 router.post("/postHistory", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
@@ -194,5 +199,15 @@ router.post("/postHistory", verifyToken, async (req, res) => {
     console.log(savedHistory);
   });
 });
+
+router.put('/updateUser', async (req, res) => {
+  const {id} = req.body; 
+  const userId = id ;
+  const userData = req.body;
+
+  const result = await updateUser(userId, userData);
+    res.status(result.status).send(result.message);
+  });
+
 
 export const entryRouter = router;

@@ -14,6 +14,7 @@ import {
   getCustomerCount,
   deleteAllCustomer,
   searchCustomers,
+  sortCustomers,
 } from "../helpers/CustomerHelper.js";
 
 router.get("/getCustomer/:id", verifyToken, async (req, res) => {
@@ -217,7 +218,11 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
       const skip = parseInt(req.query.skip);
       const sort = req.query.sort;
       const allCustomers = await getAllCustomers(limit, skip, sort);
-      res.send(allCustomers);
+      if (allCustomers?.length < 0) {
+        res.status(204);
+      } else {
+        res.send(allCustomers);
+      }
     }
   });
 });
@@ -240,16 +245,36 @@ router.get("/searchCustomer", verifyToken, async (req, res) => {
     } else {
       // Get all query parameters from the request
       const searchParams = req.query;
-      
+
       try {
         const result = await searchCustomers(searchParams);
         res.send(result);
       } catch (error) {
-        res.status(500).send({ message: "Error fetching customer data", error });
+        res
+          .status(500)
+          .send({ message: "Error fetching customer data", error });
       }
     }
   });
 });
 
+router.get("/sortCustomers", verifyToken, async (req, res) => {
+  jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+    if (err) {
+      res.sendStatus(403);
+    } else {
+      const sortType = req.body.sortType;
+
+      try {
+        const result = await sortCustomers(sortType);
+        res.send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .send({ message: "Error fetching customer data", error });
+      }
+    }
+  });
+});
 
 export const customerRouter = router;
