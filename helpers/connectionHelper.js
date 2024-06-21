@@ -151,6 +151,70 @@ async function postEncConnections(data) {
   return secret;
 }
 
+// async function activateConnection(conCatId, connId) {
+//   let filter1 = { uid: conCatId };
+//   let update1 = {
+//     $set: {
+//       connections: { active: true },
+//     },
+//   };
+
+//   const activeConnection = await client
+//     .db("DigitalProductPassport")
+//     .collection("ConnectionMasterData")
+//     .updateOne(filter1, update1);
+
+//   let filter2 = { uid: !connId };
+//   let update2 = {
+//     $set: {
+//       connections: { active: true },
+//     },
+//   };
+
+//   console.log({ activate: activeConnection });
+
+//   const deactivateConnections = await client
+//     .db("DigitalProductPassport")
+//     .collection("ConnectionMasterData")
+//     .updateMany(filter2, update2);
+
+//   console.log({ deactivate: deactivateConnections });
+
+//   return activeConnection;
+// }
+
+async function activateConnection(conCatId, connId) {
+  let filter = { id: conCatId };
+
+  const document = await client
+    .db("DigitalProductPassport")
+    .collection("ConnectionMasterData")
+    .findOne(filter);
+
+  if (!document) {
+    throw new Error(`Document with id ${conCatId} not found`);
+  }
+
+  // Modify the connections array
+  document.connections = document.connections.map((connection) => {
+    if (connection.uid === connId) {
+      console.log({ conuid: connection.uid, ConnUID: connId });
+      return { ...connection, active: true };
+    } else {
+      return { ...connection, active: false };
+    }
+  });
+
+  console.log(document.connections);
+
+  // Update the document in the database
+  const updateResult = await client
+    .db("DigitalProductPassport")
+    .collection("ConnectionMasterData")
+    .updateOne(filter, { $set: { connections: document.connections } });
+
+  return updateResult;
+}
 export {
   getallConnection,
   postConnectionHeader,
@@ -164,4 +228,5 @@ export {
   encrypt,
   decrypt,
   postEncConnections,
+  activateConnection,
 };

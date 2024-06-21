@@ -14,6 +14,7 @@ import {
   encrypt,
   decrypt,
   postEncConnections,
+  activateConnection,
 } from "../helpers/connectionHelper.js";
 
 // Middleware function to verify JWT
@@ -175,6 +176,19 @@ router.put("/deleteConnection/:id", verifyToken, async (req, res) => {
       res.send(deleted);
     }
   });
+});
+
+router.put("/activateConnection/:conCatId/:connId", async (req, res) => {
+  // jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
+  //   if (err) {
+  //     res.sendStatus(403);
+  //   } else {
+  let { conCatId, connId } = req.params;
+  console.log({ connCattId: conCatId, connId: connId });
+  const activated = await activateConnection(conCatId, connId);
+  res.send(activated);
+  //   }
+  // });
 });
 
 export const connectionRouter = router;
