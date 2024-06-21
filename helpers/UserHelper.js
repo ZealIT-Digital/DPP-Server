@@ -8,24 +8,24 @@ async function createUser(userData) {
   return postedCustomerData;
 }
 
-async function updateUser(jsonData) {
+async function updateUser(userId, userData) {
   try {
-    let newrole = jsonData.roles;
-    let newallowed = jsonData.allowed;
-    let filter = { Roles: newrole };
-    let update = {
-      $set: {
-        allowed: newallowed,
-      },
-    };
-    const updatedUser = await client
-      .db("DigitalProductPassport")
-      .collection("RoleMasterData")
-      .updateOne(filter, update);
-    return updatedUser;
+    
+    const result = await client.db("DigitalProductPassport").collection('UserMasterData').updateOne(
+      { id: userId },  // Search for the document by the custom 'id' field
+      { $set: userData }
+    );
+   
+    console.log(result);
+    if (result.matchedCount === 0) {
+      return { status: 404, message: 'User not found' };
+    }
+    // return result;
+
+    return { status: 200, message: 'User updated successfully' };
   } catch (error) {
-    console.error("Error updating user:", error);
-    throw error; // Throw the error to be caught by the caller
+    console.error(error);
+    return { status: 500, message: 'An error occurred while updating the user' };
   }
 }
 
