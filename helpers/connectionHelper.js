@@ -37,7 +37,43 @@ function decrypt(encryptedPassword, iv, secretKey) {
     decipher.final(),
   ]);
 
+  console.log({ activeConn: decryptedPassword });
+
   return decryptedPassword.toString();
+}
+
+async function getActiveConnection(conCatId) {
+  const connectionCategory = await client
+    .db("DigitalProductPassport")
+    .collection("ConnectionMasterData")
+    .findOne({ id: conCatId });
+
+  let connections = connectionCategory.connections;
+  console.log(connections);
+
+  let res = {};
+
+  let activeConnection = connections.map((connection) => {
+    let arr = connection.active == true ? (res = connection) : null;
+    // arr.map((a) => (a != null || a != undefined ? (res = a) : null));
+    return arr;
+  });
+
+  // let connectionDetailsEnc = await client
+  //   .db("DPP-Connections")
+  //   .collection("ConnectionParams")
+  //   .findOne({
+  //     connectionId: activeConnectionId.toString(),
+  //   });
+
+  // let encPass = connectionDetailsEnc.connectionParams.encryptedPassword;
+  // let iv = connectionDetailsEnc.connectionParams.iv;
+  // let secret =
+  //   "0a1b566ddb9029e336735dfaaf4c140177d44ea93f2a7a182d88fcb78c6b86be";
+
+  // let connectionDetailsDec = decrypt(encPass, iv, secret);
+
+  return res;
 }
 
 async function connectionCategoryID() {
@@ -229,4 +265,5 @@ export {
   decrypt,
   postEncConnections,
   activateConnection,
+  getActiveConnection,
 };

@@ -1,109 +1,92 @@
-import { Web3 } from "web3";
+import Web3 from "web3";
 
 const contractABI = [
   {
-    "inputs": [],
-    "name": "getData",
-    "outputs": [
+    inputs: [],
+    name: "getData",
+    outputs: [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
+    stateMutability: "view",
+    type: "function",
   },
   {
-    "inputs": [
+    inputs: [
       {
-        "internalType": "string",
-        "name": "_newData",
-        "type": "string"
-      }
+        internalType: "string",
+        name: "_newData",
+        type: "string",
+      },
     ],
-    "name": "storeData",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
+    name: "storeData",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
-    "inputs": [],
-    "name": "storedData",
-    "outputs": [
+    inputs: [],
+    name: "storedData",
+    outputs: [
       {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    stateMutability: "view",
+    type: "function",
+  },
 ];
 
-const contractAddress = "0x2774Be1ED36b1a5E146E2cFB4Db66779E8273B6f"; // Replace with your contract address
-const privateKey =
-  "0x11c26c2a80395196ba6147dab69ac95c3dc5b8f9aba0bbc753ef85f4384aa76a"; // Replace with your private key
-const web3 = new Web3(
-  new Web3.providers.HttpProvider(
-    "https://data-seed-prebsc-1-s1.binance.org:8545"
-  )
-);
+let contractAddress = "";
+let privateKey = "";
+let httpURL = "https://data-seed-prebsc-1-s1.binance.org:8545";
+let web3;
+let contract;
 
-// Load contract instance
-const contract = new web3.eth.Contract(contractABI, contractAddress);
+const setConnection = async (connectionData) => {
+  contractAddress = connectionData["Contract Address"];
+  privateKey = connectionData["Private Key"];
+  httpURL = connectionData["Web3 URL"];
 
-// async function saveText(text) {
-//   try {
-//     const account = web3.eth.accounts.privateKeyToAccount(privateKey);
-//     const data = contract.methods.set(text).encodeABI();
-//     const gas = await contract.methods
-//       .set(text)
-//       .estimateGas({ from: account.address });
-//     const tx = {
-//       from: account.address,
-//       to: contractAddress,
-//       data: data,
-//       gas: gas,
-//       gasPrice: web3.utils.toWei("5", "gwei"),
-//       nonce: await web3.eth.getTransactionCount(account.address),
-//     };
-//     const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
-//     const receipt = await web3.eth.sendSignedTransaction(
-//       signedTx.rawTransaction
-//     );
-//     const formattedReceipt = {
-//       ...receipt,
-//       cumulativeGasUsed: receipt.cumulativeGasUsed.toString(),
-//       gasUsed: receipt.gasUsed.toString(),
-//       blockNumber: receipt.blockNumber.toString(),
-//       transactionIndex: receipt.transactionIndex.toString(),
-//       effectiveGasPrice: receipt.effectiveGasPrice.toString(),
-//     };
-//     console.log("Transaction receipt:", formattedReceipt);
-//     console.log(formattedReceipt);
-//     return formattedReceipt;
-//   } catch (error) {
-//     console.error("Error in saveText:", error);
-//   }
-// }
+  console.log({
+    contractAddress: contractAddress,
+    privateKey: privateKey,
+    httpURL: httpURL,
+  });
+
+  // Initialize web3 and contract instance
+  web3 = new Web3(new Web3.providers.HttpProvider(httpURL));
+  contract = new web3.eth.Contract(contractABI, contractAddress);
+
+  // Validate the contract address
+  if (!web3.utils.isAddress(contractAddress)) {
+    throw new Error(`Invalid contract address: ${contractAddress}`);
+  }
+};
 
 async function saveText(text) {
   try {
     const account = web3.eth.accounts.privateKeyToAccount(privateKey);
     const data = contract.methods.storeData(text).encodeABI();
+
     const gas = await contract.methods
       .storeData(text)
       .estimateGas({ from: account.address });
+
     const tx = {
       from: account.address,
       to: contractAddress,
       data: data,
-      gas: gas.toString(), // Convert gas BigInt to string
+      gas: gas.toString(), // Convert gas to string
       gasPrice: web3.utils.toWei("5", "gwei"),
-      nonce: (await web3.eth.getTransactionCount(account.address)).toString(), // Convert nonce BigInt to string
+      nonce: (await web3.eth.getTransactionCount(account.address)).toString(), // Convert nonce to string
     };
+
     const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
     const receipt = await web3.eth.sendSignedTransaction(
       signedTx.rawTransaction
@@ -129,12 +112,13 @@ async function saveText(text) {
   }
 }
 
-export async function addData(data) {
+export async function addData(data, activeConnection) {
   try {
+    await setConnection(activeConnection); // Ensure setConnection completes
     let stringData = JSON.stringify(data);
     let result = await saveText(stringData);
     return result;
   } catch (error) {
-    console.error("Error in main:", error);
+    console.error("Error in addData:", error);
   }
 }
