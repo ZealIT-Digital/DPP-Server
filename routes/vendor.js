@@ -9,7 +9,7 @@ import {
   updateVendor,
   deleteVendor,
   vendID,
-  updateCustRunningNo,
+  updateVendRunningNo,
   checkVendor,
   getVendorCount,
   deleteAllVendor,
@@ -62,7 +62,6 @@ router.post("/postVendor", verifyToken, async (req, res) => {
       const existingVendor = await checkVendor(VendorData.email);
 
       if (existingVendor) {
-        // User already exists
         console.log("exists");
         res
           .status(301)
@@ -70,18 +69,28 @@ router.post("/postVendor", verifyToken, async (req, res) => {
         console.log("User with this email already exists.");
       } else {
         // Proceed with Vendor registration
-        const postedVendor = await postVendor(VendorData);
-        const idDetails = await vendID();
-        const running = parseInt(idDetails.runningNumber) + 1;
-        const { rangeStart, rangeEnd } = idDetails;
 
-        if (running > rangeStart && running < rangeEnd) {
-          updateCustRunningNo(running);
+        let idDetails = await vendID();
+        let prefix = idDetails.prefix;
+        let running = idDetails.runningNumber;
+        let rangeStart = idDetails.rangeStart;
+        let rangeEnd = idDetails.rangeEnd;
+
+        let inc = parseInt(running) + 1;
+        let newId = prefix + "-" + inc;
+
+        VendorData.id = newId;
+
+        if (inc > rangeStart && inc < rangeEnd) {
+          updateVendRunningNo(running);
+
+          const postedVendor = await postVendor(VendorData);
+
+          console.log("success");
+          res.send(postedVendor);
         }
 
         // User registered successfully
-        console.log("success");
-        res.send(postedVendor);
       }
     }
   });
@@ -125,7 +134,6 @@ router.get("/genVendId", verifyToken, async (req, res) => {
     let id = prefix + "-" + inc;
 
     if (inc > rangeStart && inc < rangeEnd) {
-      // updateCustRunningNo(inc);
       res.send({ message: id });
     } else {
       res.send({ message: "ID Range did not match" });
@@ -153,9 +161,11 @@ router.get("/copyVendor/:id", verifyToken, async (req, res) => {
     toCopy.descreption = "";
     toCopy.addressL1 = "";
     toCopy.addressL2 = "";
+
     delete toCopy._id;
+
     if (inc > rangeStart && inc < rangeEnd) {
-      await updateCustRunningNo(inc);
+      await updateVendRunningNo(inc);
       let custCopy = await postVendor(toCopy);
 
       let toSend = {

@@ -68,7 +68,7 @@ async function checkVendor(email) {
     .findOne({ email: email });
   return userData;
 }
-async function updateCustRunningNo(num) {
+async function updateVendRunningNo(num) {
   let filter = { idType: "Vendor" };
   let update = {
     $set: {
@@ -139,7 +139,7 @@ export {
   updateVendor,
   deleteVendor,
   vendID,
-  updateCustRunningNo,
+  updateVendRunningNo,
   checkVendor,
   getVendorCount,
   deleteAllVendor,
