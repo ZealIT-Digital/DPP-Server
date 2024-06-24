@@ -332,7 +332,10 @@ router.post("/checkDuplicateSerialkey", verifyToken, async (req, res) => {
       console.log(err);
       res.sendStatus(403);
     } else {
-      const { serialkey, productId } = req.body;
+      const serialkey = req.body["serialkey"];
+      const productId = req.body["productId"];
+      console.log("my body", req.body);
+
       try {
         const check = await SerialCheck(serialkey, productId);
         if (check) {
