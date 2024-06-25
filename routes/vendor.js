@@ -82,7 +82,7 @@ router.post("/postVendor", verifyToken, async (req, res) => {
         VendorData.id = newId;
 
         if (inc > rangeStart && inc < rangeEnd) {
-          updateVendRunningNo(running);
+          updateVendRunningNo(inc);
 
           const postedVendor = await postVendor(VendorData);
 
