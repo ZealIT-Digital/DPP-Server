@@ -134,8 +134,14 @@ router.post("/updateCustomer/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let customerData = req.body;
 
+      console.log(customerData);
+
       const postedProductData = await updateCustomer(id, customerData);
-      res.send(postedProductData);
+      if (postedProductData.status === 301) {
+        res.status(301).send({ message: postedProductData.message });
+      } else {
+        res.send(postedProductData);
+      }
     }
   });
 });
