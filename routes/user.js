@@ -195,19 +195,20 @@ router.post("/postHistory", verifyToken, async (req, res) => {
     let history = req.body;
 
     let savedHistory = await postHistory(history);
+    console.log({ hist: savedHistory });
 
     console.log(savedHistory);
+    return savedHistory;
   });
 });
 
-router.put('/updateUser', async (req, res) => {
-  const {id} = req.body; 
-  const userId = id ;
+router.put("/updateUser", async (req, res) => {
+  const { id } = req.body;
+  const userId = id;
   const userData = req.body;
 
   const result = await updateUser(userId, userData);
-    res.status(result.status).send(result.message);
-  });
-
+  res.status(result.status).send(result.message);
+});
 
 export const entryRouter = router;

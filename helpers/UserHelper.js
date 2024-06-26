@@ -10,22 +10,27 @@ async function createUser(userData) {
 
 async function updateUser(userId, userData) {
   try {
-    
-    const result = await client.db("DigitalProductPassport").collection('UserMasterData').updateOne(
-      { id: userId },  // Search for the document by the custom 'id' field
-      { $set: userData }
-    );
-   
+    const result = await client
+      .db("DigitalProductPassport")
+      .collection("UserMasterData")
+      .updateOne(
+        { id: userId }, // Search for the document by the custom 'id' field
+        { $set: userData }
+      );
+
     console.log(result);
     if (result.matchedCount === 0) {
-      return { status: 404, message: 'User not found' };
+      return { status: 404, message: "User not found" };
     }
     // return result;
 
-    return { status: 200, message: 'User updated successfully' };
+    return { status: 200, message: "User updated successfully" };
   } catch (error) {
     console.error(error);
-    return { status: 500, message: 'An error occurred while updating the user' };
+    return {
+      status: 500,
+      message: "An error occurred while updating the user",
+    };
   }
 }
 
@@ -57,6 +62,9 @@ async function postHistory(History) {
       .db("DigitalProductPassport")
       .collection("UserMasterData")
       .updateOne(filter, update);
+
+    console.log({ ph: PostedHistory });
+
     return PostedHistory;
   } else {
     return "error";
