@@ -80,7 +80,7 @@ async function SerialCheck(serialkey, productId) {
         },
         {
           $match: {
-            "serialNos.serialNos": parseInt(serialkey), // Match the specific serial number
+            "serialNos.serialNos": serialkey, // Match the specific serial number as a string
           },
         },
         {
@@ -107,6 +107,7 @@ async function SerialCheck(serialkey, productId) {
     throw error;
   }
 }
+
 async function checkproduct(name) {
   const userData = await client
     .db("DigitalProductPassport")

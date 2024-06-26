@@ -19,6 +19,7 @@ import { componentRouter } from "./routes/components.js";
 import { roleRouter } from "./routes/roles.js";
 import { logsRouter } from "./routes/logs.js";
 import { blockchainRouter } from "./routes/blockchain.js";
+import { vendorRouter } from "./routes/vendor.js";
 
 dotenv.config();
 const app = express();
@@ -106,6 +107,7 @@ const verifyRole = (roles) => async (req, res, next) => {
 app.use("/entry", entryRouter);
 app.use("/product", productRouter);
 app.use("/customer", customerRouter);
+app.use("/vendor", vendorRouter);
 app.use("/ui", uiRouter);
 app.use("/connection", connectionRouter);
 app.use("/components", componentRouter);

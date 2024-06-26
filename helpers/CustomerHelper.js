@@ -41,6 +41,13 @@ async function postCustomer(customerData) {
   return postedCustomerData;
 }
 async function updateCustomer(id, customerData) {
+  const existingUser = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .findOne({ email: customerData.email, id: { $ne: id } });
+  if (existingUser) {
+    return { status: 301, message: "Email already exists in another user" }; // Conflict status code
+  }
   const postedProductData = await client
     .db("DigitalProductPassport")
     .collection("CustomerMasterData")
@@ -120,17 +127,16 @@ async function searchCustomers(queryParams) {
   return customerData;
 }
 
-  async function sortCustomers(sortType){
+async function sortCustomers(sortType) {
+  const sortedCustomers = await client
+    .db("DigitalProductPassport")
+    .collection("CustomerMasterData")
+    .find()
+    .sort({ id: sortType })
+    .toArray();
 
-    const sortedCustomers = await client
-       .db("DigitalProductPassport")
-       .collection("CustomerMasterData")
-       .find().sort({id:sortType})
-       .toArray();
-   
-   return sortedCustomers;
-   }
-
+  return sortedCustomers;
+}
 
 export {
   getAllLogs,
