@@ -26,6 +26,7 @@ const app = express();
 
 const allowedOrigins = [
   "https://dpp-client-dev.vercel.app",
+  "https://dpp-server-app.azurewebsites.net",
   "https://devdpp.vercel.app",
   "http://localhost:3000",
 ];
