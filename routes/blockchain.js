@@ -17,6 +17,12 @@ import { retrieveData } from "../blockChain/newretrive.js";
 
 router.post(`/post`, async (req, res) => {
   let data = req.body;
+  console.log(data);
+  res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
 
   let activeConnection = await getActiveConnection("CONCAT-700038");
   console.log({ cd: activeConnection });
