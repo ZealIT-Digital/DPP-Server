@@ -24,7 +24,7 @@ router.post(`/post`, async (req, res) => {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
 
-  let activeConnection = await getActiveConnection("CONCAT-700038");
+  let activeConnection = await getActiveConnection("CONCAT-700001");
   console.log({ cd: activeConnection });
   try {
     let bcResult = await addData(data, activeConnection);

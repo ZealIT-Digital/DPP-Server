@@ -43,10 +43,13 @@ function decrypt(encryptedPassword, iv, secretKey) {
 }
 
 async function getActiveConnection(conCatId) {
+  console.log({ conCatId: conCatId });
   const connectionCategory = await client
     .db("DigitalProductPassport")
     .collection("ConnectionMasterData")
     .findOne({ id: conCatId });
+
+  console.log({ conn: connectionCategory });
 
   let connections = connectionCategory.connections;
   console.log(connections);
