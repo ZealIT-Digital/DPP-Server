@@ -3,38 +3,39 @@ import jwt from "jsonwebtoken";
 const router = express.Router();
 
 import {
-  getAllCustomers,
-  getCustomerById,
-  postCustomer,
-  updateCustomer,
-  deleteCustomer,
+  getAllEntitys,
+  getEntityById,
+  postEntity,
+  updateEntity,
+  deleteEntity,
   custID,
   updateCustRunningNo,
-  checkcustomer,
-  getCustomerCount,
-  deleteAllCustomer,
-  searchCustomers,
-  sortCustomers,
-} from "../helpers/CustomerHelper.js";
+  checkEntity,
+  getEntityCount,
+  deleteAllEntity,
+  searchEntitys,
+  sortEntitys,
+} from "../helpers/EntityHelper.js";
 
-router.get("/getCustomer/:id", verifyToken, async (req, res) => {
+router.get("/getEntity/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
       let { id } = req.params;
-      const result = await getCustomerById(id);
+      const result = await getEntityById(id);
+      console.log(id);
       res.send(result);
     }
   });
 });
 
-router.get("/getCustomerCount", verifyToken, async (req, res) => {
+router.get("/getEntityCount", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      const result = await getCustomerCount();
+      const result = await getEntityCount();
       res.send({ count: result });
     }
   });
@@ -53,15 +54,15 @@ function verifyToken(req, res, next) {
   }
 }
 
-router.post("/postCustomer", verifyToken, async (req, res) => {
+router.post("/postEntity", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      const customerData = req.body;
-      const existingCustomer = await checkcustomer(customerData.email);
+      const EntityData = req.body;
+      const existingEntity = await checkEntity(EntityData.email);
 
-      if (existingCustomer) {
+      if (existingEntity) {
         // User already exists
         console.log("exists");
         res
@@ -69,8 +70,8 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
           .send({ message: "User with this email already exists." });
         console.log("User with this email already exists.");
       } else {
-        // Proceed with customer registration
-        const postedCustomer = await postCustomer(customerData);
+        // Proceed with entity registration
+        const postedEntity = await postEntity(EntityData);
         const idDetails = await custID();
         const running = parseInt(idDetails.runningNumber) + 1;
         const { rangeStart, rangeEnd } = idDetails;
@@ -81,20 +82,20 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
 
         // User registered successfully
         console.log("success");
-        res.send(postedCustomer);
+        res.send(postedEntity);
       }
     }
   });
 });
 
-// router.post("/postCustomer", verifyToken, async (req, res) => {
+// router.post("/postEntity", verifyToken, async (req, res) => {
 //   try {
 //     const decoded = await jwt.verify(req.token, "DPP-Shh");
-//     const customerData = req.body;
+//     const EntityData = req.body;
 
-//     const existingCustomer = await checkcustomer(customerData.email);
+//     const existingEntity = await checkEntity(EntityData.email);
 
-//     if (existingCustomer) {
+//     if (existingEntity) {
 //       // User already exists
 //       console.log("exists");
 //       return res
@@ -102,8 +103,8 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
 //         .json({ message: "User with this email already exists." });
 //     }
 
-//     // Proceed with customer registration
-//     const postedCustomer = await postCustomer(customerData);
+//     // Proceed with entity registration
+//     const postedEntity = await postEntity(EntityData);
 
 //     const idDetails = await custID();
 //     const running = parseInt(idDetails.runningNumber) + 1;
@@ -125,18 +126,18 @@ router.post("/postCustomer", verifyToken, async (req, res) => {
 //   }
 // });
 
-router.post("/updateCustomer/:id", verifyToken, async (req, res) => {
+router.post("/updateEntity/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       console.log(err);
       res.sendStatus(403);
     } else {
       let { id } = req.params;
-      let customerData = req.body;
+      let EntityData = req.body;
 
-      console.log(customerData);
+      console.log(EntityData);
 
-      const postedProductData = await updateCustomer(id, customerData);
+      const postedProductData = await updateEntity(id, EntityData);
       if (postedProductData.status === 301) {
         res.status(301).send({ message: postedProductData.message });
       } else {
@@ -145,14 +146,14 @@ router.post("/updateCustomer/:id", verifyToken, async (req, res) => {
     }
   });
 });
-router.delete("/deleteCustomer/:id", verifyToken, async (req, res) => {
+router.delete("/deleteEntity/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
       let { id } = req.params;
-      const deletedCustomer = await deleteCustomer(id);
-      res.send(deletedCustomer);
+      const deletedEntity = await deleteEntity(id);
+      res.send(deletedEntity);
     }
   });
 });
@@ -177,11 +178,11 @@ router.get("/genCustId", verifyToken, async (req, res) => {
   });
 });
 
-router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
+router.get("/copyEntity/:id", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     let { id } = req.params;
 
-    let toCopy = await getCustomerById(id);
+    let toCopy = await getEntityById(id);
 
     let idDetails = await custID();
     let prefix = idDetails.prefix;
@@ -200,7 +201,7 @@ router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
     delete toCopy._id;
     if (inc > rangeStart && inc < rangeEnd) {
       await updateCustRunningNo(inc);
-      let custCopy = await postCustomer(toCopy);
+      let custCopy = await postEntity(toCopy);
 
       let toSend = {
         custCopy: custCopy,
@@ -214,7 +215,7 @@ router.get("/copyCustomer/:id", verifyToken, async (req, res) => {
   });
 });
 
-router.get("/getAllCustomers", verifyToken, async (req, res) => {
+router.get("/getAllEntitys", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -223,11 +224,11 @@ router.get("/getAllCustomers", verifyToken, async (req, res) => {
       const limit = parseInt(req.query.limit) || 5; // Default to limit 5 if not provided
       const skip = parseInt(req.query.skip);
       const sort = req.query.sort;
-      const allCustomers = await getAllCustomers(limit, skip, sort);
-      if (allCustomers?.length < 0) {
+      const allEntitys = await getAllEntitys(limit, skip, sort);
+      if (allEntitys?.length < 0) {
         res.status(204);
       } else {
-        res.send(allCustomers);
+        res.send(allEntitys);
       }
     }
   });
@@ -238,13 +239,13 @@ router.delete("/d-a-c", verifyToken, async (req, res) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      const delet = await deleteAllCustomer();
+      const delet = await deleteAllEntity();
       res.send(delet);
     }
   });
 });
 
-router.get("/searchCustomer", verifyToken, async (req, res) => {
+router.get("/searchEntity", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -253,18 +254,16 @@ router.get("/searchCustomer", verifyToken, async (req, res) => {
       const searchParams = req.query;
 
       try {
-        const result = await searchCustomers(searchParams);
+        const result = await searchEntitys(searchParams);
         res.send(result);
       } catch (error) {
-        res
-          .status(500)
-          .send({ message: "Error fetching customer data", error });
+        res.status(500).send({ message: "Error fetching entity data", error });
       }
     }
   });
 });
 
-router.get("/sortCustomers", verifyToken, async (req, res) => {
+router.get("/sortEntitys", verifyToken, async (req, res) => {
   jwt.verify(req.token, "DPP-Shh", async (err, authData) => {
     if (err) {
       res.sendStatus(403);
@@ -272,15 +271,13 @@ router.get("/sortCustomers", verifyToken, async (req, res) => {
       const sortType = req.body.sortType;
 
       try {
-        const result = await sortCustomers(sortType);
+        const result = await sortEntitys(sortType);
         res.send(result);
       } catch (error) {
-        res
-          .status(500)
-          .send({ message: "Error fetching customer data", error });
+        res.status(500).send({ message: "Error fetching entity data", error });
       }
     }
   });
 });
 
-export const customerRouter = router;
+export const EntityRouter = router;

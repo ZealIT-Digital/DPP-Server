@@ -1,11 +1,11 @@
 import { client } from "../index.js";
 
 async function createUser(userData) {
-  const postedCustomerData = await client
+  const postedEntityData = await client
     .db("DigitalProductPassport")
     .collection("UserMasterData")
     .insertOne(userData);
-  return postedCustomerData;
+  return postedEntityData;
 }
 
 async function updateUser(userId, userData) {

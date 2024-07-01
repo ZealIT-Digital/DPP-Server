@@ -1,82 +1,82 @@
 import { client } from "../index.js";
 
-async function getAllCustomers(limit, skip, sort) {
+async function getAllEntitys(limit, skip, sort) {
   console.log("mskip", skip);
-  const allCustomerData = await client
+  const allEntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .find()
     .skip(parseInt(skip))
     .limit(limit)
     .sort({ id: sort })
     .toArray();
 
-  return allCustomerData;
+  return allEntityData;
 }
 
 async function getAllLogs() {
   const allLogs = await client
     .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
+    .collection("EntityLogMaster")
     .find()
     .toArray();
   return allLogs;
 }
 
-async function getCustomerById(id) {
-  const customerData = await client
+async function getEntityById(id) {
+  const EntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .findOne({ id: id }, function (err, result) {
       if (err) throw err;
     });
-  return customerData;
+  return EntityData;
 }
 
-async function postCustomer(customerData) {
-  const postedCustomerData = await client
+async function postEntity(EntityData) {
+  const postedEntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
-    .insertOne(customerData);
-  return postedCustomerData;
+    .collection("EntityMasterData")
+    .insertOne(EntityData);
+  return postedEntityData;
 }
-async function updateCustomer(id, customerData) {
+async function updateEntity(id, EntityData) {
   const existingUser = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
-    .findOne({ email: customerData.email, id: { $ne: id } });
+    .collection("EntityMasterData")
+    .findOne({ email: EntityData.email, id: { $ne: id } });
   if (existingUser) {
     return { status: 301, message: "Email already exists in another user" }; // Conflict status code
   }
   const postedProductData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
-    .replaceOne({ id: id }, customerData);
+    .collection("EntityMasterData")
+    .replaceOne({ id: id }, EntityData);
   return postedProductData;
 }
-async function deleteCustomer(id) {
-  const deletedCustomer = await client
+async function deleteEntity(id) {
+  const deletedEntity = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .deleteOne({ id: id });
-  return deletedCustomer;
+  return deletedEntity;
 }
 async function custID() {
   const productDetail = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
-    .findOne({ idType: "Customer" });
+    .findOne({ idType: "Entity" });
   return productDetail;
 }
-async function checkcustomer(email) {
+async function checkEntity(email) {
   const userData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .findOne({ email: email });
   return userData;
 }
 async function updateCustRunningNo(num) {
-  let filter = { idType: "Customer" };
+  let filter = { idType: "Entity" };
   let update = {
     $set: {
       runningNumber: num,
@@ -90,25 +90,25 @@ async function updateCustRunningNo(num) {
   return updatedDetails;
 }
 
-async function getCustomerCount() {
+async function getEntityCount() {
   const count = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .countDocuments();
 
   return count;
 }
 
-async function deleteAllCustomer() {
+async function deleteAllEntity() {
   const delet = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .deleteMany();
 
   return delet;
 }
 
-async function searchCustomers(queryParams) {
+async function searchEntitys(queryParams) {
   const query = {};
 
   // Populate query object dynamically based on provided query parameters
@@ -118,38 +118,38 @@ async function searchCustomers(queryParams) {
     }
   }
 
-  const customerData = await client
+  const EntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .find(query)
     .toArray();
 
-  return customerData;
+  return EntityData;
 }
 
-async function sortCustomers(sortType) {
-  const sortedCustomers = await client
+async function sortEntitys(sortType) {
+  const sortedEntitys = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .find()
     .sort({ id: sortType })
     .toArray();
 
-  return sortedCustomers;
+  return sortedEntitys;
 }
 
 export {
   getAllLogs,
-  getAllCustomers,
-  getCustomerById,
-  postCustomer,
-  updateCustomer,
-  deleteCustomer,
+  getAllEntitys,
+  getEntityById,
+  postEntity,
+  updateEntity,
+  deleteEntity,
   custID,
   updateCustRunningNo,
-  checkcustomer,
-  getCustomerCount,
-  deleteAllCustomer,
-  searchCustomers,
-  sortCustomers,
+  checkEntity,
+  getEntityCount,
+  deleteAllEntity,
+  searchEntitys,
+  sortEntitys,
 };

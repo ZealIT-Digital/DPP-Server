@@ -1,11 +1,11 @@
 import { client } from "./index.js";
 
 async function createUser(userData) {
-  const postedCustomerData = await client
+  const postedEntityData = await client
     .db("DigitalProductPassport")
     .collection("UserMasterData")
     .insertOne(userData);
-  return postedCustomerData;
+  return postedEntityData;
 }
 
 async function login(email) {
@@ -16,13 +16,13 @@ async function login(email) {
   return loginUserData;
 }
 
-async function getAllCustomers() {
-  const allCustomerData = await client
+async function getAllEntitys() {
+  const allEntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .find()
     .toArray();
-  return allCustomerData;
+  return allEntityData;
 }
 
 async function getAllProducts() {
@@ -34,14 +34,14 @@ async function getAllProducts() {
   return allProductData;
 }
 
-async function getCustomerById(id) {
-  const customerData = await client
+async function getEntityById(id) {
+  const EntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .findOne({ id: id }, function (err, result) {
       if (err) throw err;
     });
-  return customerData;
+  return EntityData;
 }
 
 async function getProductsById(id) {
@@ -52,12 +52,12 @@ async function getProductsById(id) {
   return productData;
 }
 
-async function postCustomer(customerData) {
-  const postedCustomerData = await client
+async function postEntity(EntityData) {
+  const postedEntityData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
-    .insertOne(customerData);
-  return postedCustomerData;
+    .collection("EntityMasterData")
+    .insertOne(EntityData);
+  return postedEntityData;
 }
 
 async function postProduct(productData) {
@@ -102,28 +102,28 @@ async function updateProduct(productId, tempID) {
   return updatedDetails;
 }
 
-async function updateCustomer(id, customerData) {
+async function updateEntity(id, EntityData) {
   const postedProductData = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
-    .replaceOne({ id: id }, customerData);
+    .collection("EntityMasterData")
+    .replaceOne({ id: id }, EntityData);
   return postedProductData;
 }
 
-async function deleteCustomer(id) {
-  const deletedCustomer = await client
+async function deleteEntity(id) {
+  const deletedEntity = await client
     .db("DigitalProductPassport")
-    .collection("CustomerMasterData")
+    .collection("EntityMasterData")
     .deleteOne({ id: id });
-  return deletedCustomer;
+  return deletedEntity;
 }
 
 async function deleteProduct(id) {
-  const deletedCustomer = await client
+  const deletedEntity = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .deleteOne({ id: id });
-  return deletedCustomer;
+  return deletedEntity;
 }
 
 async function getUiTemplate(id) {
@@ -193,7 +193,7 @@ async function custID() {
   const productDetail = await client
     .db("DigitalProductPassport")
     .collection("NumberRangeMasterData")
-    .findOne({ idType: "Customer" });
+    .findOne({ idType: "Entity" });
   return productDetail;
 }
 
@@ -269,7 +269,7 @@ async function PostIdentity(identity) {
 //! To Be Removed - End
 
 async function updateCustRunningNo(num) {
-  let filter = { idType: "Customer" };
+  let filter = { idType: "Entity" };
   let update = {
     $set: {
       runningNumber: num,
@@ -285,13 +285,13 @@ async function updateCustRunningNo(num) {
 export {
   createUser,
   login,
-  getAllCustomers,
-  getCustomerById,
+  getAllEntitys,
+  getEntityById,
   getProductsById,
-  postCustomer,
+  postEntity,
   postProduct,
-  updateCustomer,
-  deleteCustomer,
+  updateEntity,
+  deleteEntity,
   getUiTemplate,
   postUiTemplate,
   getAllProducts,

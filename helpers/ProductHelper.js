@@ -31,7 +31,7 @@ async function getAllProductCategory() {
 // async function getAllLogs() {
 //   const allLogs = await client
 //     .db("DigitalProductPassport")
-//     .collection("CustomerLogMaster")
+//     .collection("EntityLogMaster")
 //     .find()
 //     .toArray();
 //   return allLogs;
@@ -40,7 +40,7 @@ async function getAllLogs(page = 1, limit = 5) {
   const skips = (page - 1) * limit;
   const allLogs = await client
     .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
+    .collection("EntityLogMaster")
     .find()
     .skip(skips)
     .limit(limit)
@@ -170,11 +170,11 @@ async function updateProduct(productId, tempID) {
   return updatedDetails;
 }
 async function deleteProduct(id) {
-  const deletedCustomer = await client
+  const deletedEntity = await client
     .db("DigitalProductPassport")
     .collection("ProductMasterData")
     .deleteOne({ id: id });
-  return deletedCustomer;
+  return deletedEntity;
 }
 async function getUiMasterTemplatebyCategory(category) {
   const UiTemplate = await client
@@ -227,11 +227,11 @@ async function updateTempRunningNo(num) {
 }
 
 async function addProductCategory(data) {
-  const postedCustomerData = await client
+  const postedEntityData = await client
     .db("DigitalProductPassport")
     .collection("ProductCategoryMasterData")
     .insertOne(data);
-  return postedCustomerData;
+  return postedEntityData;
 }
 
 async function prodCatId() {
@@ -257,11 +257,11 @@ async function updateProdCatRunningNo(num) {
 }
 
 async function deleteProductCategory(id) {
-  const deletedCustomer = await client
+  const deletedEntity = await client
     .db("DigitalProductPassport")
     .collection("ProductCategoryMasterData")
     .deleteOne({ id: id });
-  return deletedCustomer;
+  return deletedEntity;
 }
 
 async function updateProductCategory(catId, tempID) {

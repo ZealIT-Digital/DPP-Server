@@ -35,7 +35,7 @@ import {
 
 import { updateUi } from "../helpers/UiHelper.js";
 
-import { getCustomerById } from "../helpers/CustomerHelper.js";
+import { getEntityById } from "../helpers/EntityHelper.js";
 
 let router = express.Router();
 router.get("/getAllProducts", verifyToken, async (req, res) => {
@@ -82,10 +82,10 @@ router.get("/getProducts/:id", verifyToken, async (req, res) => {
       let { id } = req.params;
       let productId = [];
       let productArray = [];
-      const customerData = await getCustomerById(id);
+      const EntityData = await getEntityById(id);
 
-      for (let i = 0; i < customerData.products.length; i++) {
-        productId.push(customerData.products[i].id);
+      for (let i = 0; i < EntityData.products.length; i++) {
+        productId.push(EntityData.products[i].id);
       }
 
       for (let i = 0; i < productId.length; i++) {

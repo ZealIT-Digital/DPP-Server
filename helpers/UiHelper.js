@@ -11,7 +11,7 @@ async function getUiTemplate(id) {
 async function PostLogs(logs) {
   const PostedLogs = await client
     .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
+    .collection("EntityLogMaster")
     .insertOne(logs);
   return PostLogs;
 }

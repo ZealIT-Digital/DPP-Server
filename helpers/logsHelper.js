@@ -43,7 +43,7 @@ async function getAllLogs(
   try {
     logs = await client
       .db("DigitalProductPassport")
-      .collection("CustomerLogMaster")
+      .collection("EntityLogMaster")
       .find(query)
       .sort({ date: date, time: time })
       .skip(skips)
@@ -58,7 +58,7 @@ async function getAllLogs(
   // Pagination logic
   const totalLogs = await client
     .db("DigitalProductPassport")
-    .collection("CustomerLogMaster")
+    .collection("EntityLogMaster")
     .countDocuments(query); // Count total number of logs that match the query
 
   const hasMoreLogs = totalLogs > skips + logs.length; // Check if there are more logs available
@@ -94,7 +94,7 @@ async function GetLogs(startDate, endDate, type, action) {
     // Fetch logs based on the query
     const logs = await client
       .db("DigitalProductPassport")
-      .collection("CustomerLogMaster")
+      .collection("EntityLogMaster")
       .find(query)
       .toArray();
 
@@ -115,7 +115,7 @@ async function PostLogs(logs) {
   try {
     const dbResponse = await client
       .db("DigitalProductPassport")
-      .collection("CustomerLogMaster")
+      .collection("EntityLogMaster")
       .insertOne(formattedLogs);
 
     return dbResponse;

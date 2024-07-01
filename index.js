@@ -12,7 +12,7 @@ import { retrieveData } from "./blockChain/newretrive.js";
 
 import { entryRouter } from "./routes/user.js";
 import { productRouter } from "./routes/product.js";
-import { customerRouter } from "./routes/customer.js";
+import { EntityRouter } from "./routes/entity.js";
 import { uiRouter } from "./routes/ui.js";
 import { connectionRouter } from "./routes/connection.js";
 import { componentRouter } from "./routes/components.js";
@@ -107,7 +107,7 @@ const verifyRole = (roles) => async (req, res, next) => {
 
 app.use("/entry", entryRouter);
 app.use("/product", productRouter);
-app.use("/customer", customerRouter);
+app.use("/entity", EntityRouter);
 app.use("/vendor", vendorRouter);
 app.use("/ui", uiRouter);
 app.use("/connection", connectionRouter);
