@@ -15,6 +15,7 @@ import {
   deleteAllEntity,
   searchEntitys,
   sortEntitys,
+  checkPhoneNumber,
 } from "../helpers/EntityHelper.js";
 
 router.get("/getEntity/:id", verifyToken, async (req, res) => {
@@ -60,15 +61,22 @@ router.post("/postEntity", verifyToken, async (req, res) => {
       res.sendStatus(403);
     } else {
       const EntityData = req.body;
-      const existingEntity = await checkEntity(EntityData.email);
+      const existingEmail = await checkEntity(EntityData.email);
+      const existingPhone = await checkPhoneNumber(EntityData.phoneNo);
 
-      if (existingEntity) {
+      if (existingEmail) {
         // User already exists
-        console.log("exists");
+        console.log(" Email exists");
         res
           .status(301)
           .send({ message: "User with this email already exists." });
         console.log("User with this email already exists.");
+      } else if (existingPhone) {
+        console.log("Phone Number exists");
+        res
+          .status(302)
+          .send({ message: "User with this Phone Number already exists." });
+        console.log("User with this Phone Number already exists.");
       } else {
         // Proceed with entity registration
         const postedEntity = await postEntity(EntityData);

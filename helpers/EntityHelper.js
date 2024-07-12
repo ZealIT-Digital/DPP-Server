@@ -75,6 +75,13 @@ async function checkEntity(email) {
     .findOne({ email: email });
   return userData;
 }
+async function checkPhoneNumber(PhoneNumber) {
+  const userData = await client
+    .db("DigitalProductPassport")
+    .collection("EntityMasterData")
+    .findOne({ phoneNo: PhoneNumber });
+  return userData;
+}
 async function updateCustRunningNo(num) {
   let filter = { idType: "Entity" };
   let update = {
@@ -152,4 +159,5 @@ export {
   deleteAllEntity,
   searchEntitys,
   sortEntitys,
+  checkPhoneNumber,
 };
